@@ -395,11 +395,23 @@ namespace game
 
     void damaged(int damage, fpsent *d, fpsent *actor, bool local)
     {
+
         if((d->state!=CS_ALIVE && d->state != CS_LAGGED && d->state != CS_SPAWNING) || intermission) return;
 
         if(local) damage = d->dodamage(damage);
-        else if(actor==player1) return;
+        else if(actor==player1)
+        {
+            //tflog event
+            round_event re;
+            game_round* this_round = get_this_round();
+            re.timestamp = millis();
+            re.ev_type = strdup("game");
+            re.shot = true;
+            this_round->events.add(re);
 
+            // part of the vanilla code
+            return;
+        }
         fpsent *h = hudplayer();
         if(h!=player1 && actor==h && d!=actor)
         {
@@ -435,6 +447,15 @@ namespace game
         }
         if(d==player1)
         {
+            //tflog event
+            round_event re;
+            game_round* this_round = get_this_round();
+            re.timestamp = millis();
+            re.ev_type = strdup("game");
+            re.player_death = true;
+            this_round->events.add(re);
+
+
             if(deathscore) showscores(true);
             disablezoom();
             if(!restore) loopi(NUMGUNS) savedammo[i] = player1->ammo[i];
@@ -445,6 +466,15 @@ namespace game
         }
         else
         {
+            //tflog event
+            round_event re;
+            game_round* this_round = get_this_round();
+            re.timestamp = millis();
+            re.ev_type = strdup("game");
+            re.bot_death = true;
+            this_round->events.add(re);
+
+
             d->move = d->strafe = 0;
             d->resetinterp();
             d->smoothmillis = 0;

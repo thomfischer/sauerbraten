@@ -1,13 +1,64 @@
 // main.cpp: initialisation & main loop
-
 #include "engine.h"
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #ifdef SDL_VIDEO_DRIVER_X11
 #include "SDL_syswm.h"
 #endif
 
-extern void cleargamma();
 
+// struct round_event
+// {
+//     long int timestamp;
+//     string ev_type;        // game event, input event
+//     // input events
+//     string input_type;     // MouseUp, KeyDown, etc
+//     string input_value;    // KEY_W, LMB
+//     int delay_this;
+//     // game events
+//     bool shot;             // 1=hit, 0=miss, NULL=no shot
+//     bool bot_death;
+//     bool player_death;
+// };
+
+// struct game_round
+// {
+//     int round_number;
+//     vector<round_event> events;
+//     int kills;
+//     int deaths;
+//     float completion_time;
+//     int delay_min;
+//     int delay_max;
+// } *this_round;
+
+game_round* this_round = new game_round;
+vector<game_round>* rounds = new vector<game_round>;
+
+game_round* get_this_round(){ return this_round; }
+
+long int millis()
+{
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    long int ms = time.tv_sec * 1000 + time.tv_usec / 1000;
+    return ms;
+}
+
+
+extern void cleargamma();
+int t_key = 0;
+int t_mouse = 0;
+int t_delta = 0;
+int array_size = 1000;
+int array[1000] = {};
+int array_i = 0;
+int last_t = 0;
+int t = 0;
+bool measuring = true;
 void cleanup()
 {
     recorder::stop();
@@ -32,6 +83,15 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
+    for(int i=0; i<this_round->events.length(); ++i)
+    {
+        if(this_round->events[i].input_value)
+        {
+            logoutf("%ld \t %s \t %s", this_round->events[i].timestamp, this_round->events[i].ev_type, this_round->events[i].input_value);
+        }
+        else logoutf("%ld \t %s", this_round->events[i].timestamp, this_round->events[i].ev_type);
+    }
+    
     writeinitcfg();
     writeservercfg();
     abortconnect();
@@ -799,6 +859,7 @@ void resetgl()
 COMMAND(resetgl, "");
 
 static queue<SDL_Event, 32> events;
+static queue<SDL_Event, 32> delayed_events;
 
 static inline bool filterevent(const SDL_Event &event)
 {
@@ -828,8 +889,32 @@ template <int SIZE> static inline bool pumpevents(queue<SDL_Event, SIZE> &events
         int n = SDL_PeepEvents(buf.getbuf(), buf.remaining(), SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
         if(n <= 0) return false;
         loopi(n) if(filterevent(buf.buf[i])) buf.put(buf.buf[i]);
+
         events.addbuf(buf);
     }
+
+    return true;
+}
+
+template <int SIZE> static inline bool delayed_pumpevents(queue<SDL_Event, SIZE> &events, queue<SDL_Event, SIZE> &delayed_events)
+{
+    if(delayed_events.length() <= 0)
+    {
+        if(!pumpevents(events)) return false;
+    }
+
+    for(int i=0; i<events.length(); ++i)
+    {
+        SDL_Event foo = events.removing(i);
+        if (foo.type == SDL_MOUSEMOTION
+            || foo.common.timestamp + 100 <= SDL_GetTicks())
+        {
+            delayed_events.add(events.remove(i));
+        }
+    }
+
+    if(delayed_events.length() <= 0) return false;
+
     return true;
 }
 
@@ -912,12 +997,14 @@ static void checkmousemotion(int &dx, int &dy)
 void checkinput()
 {
     if(interceptkeysym) clearinterceptkey();
-    //int lasttype = 0, lastbut = 0;
     bool mousemoved = false;
     int focused = 0;
-    while(pumpevents(events))
+    conoutf("ev: %i \t dl: %i", events.length(), delayed_events.length());
+    // while(pumpevents(events))
+    while(delayed_pumpevents(events, delayed_events))
     {
-        SDL_Event &event = events.remove();
+        // SDL_Event &event = events.remove();
+        SDL_Event &event = delayed_events.remove();
 
         if(focused && event.type!=SDL_WINDOWEVENT) { if(grabinput != (focused>0)) inputgrab(grabinput = focused>0, shouldgrab); focused = 0; }
 
@@ -939,7 +1026,17 @@ void checkinput()
             case SDL_KEYDOWN:
             case SDL_KEYUP:
                 if(keyrepeatmask || !event.key.repeat)
+                {
                     processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED, event.key.keysym.mod | SDL_GetModState());
+                 
+                    // event
+                    round_event re;
+                    re.timestamp = millis();
+                    re.ev_type = strdup("input");
+                    re.input_type = strdup("keyup");
+                    re.input_value = strdup(SDL_GetKeyName(event.key.keysym.sym));
+                    this_round->events.add(re);
+                }
                 break;
 
             case SDL_WINDOWEVENT:
@@ -1001,6 +1098,7 @@ void checkinput()
                 break;
 
             case SDL_MOUSEBUTTONDOWN:
+                t_mouse = event.button.timestamp;
             case SDL_MOUSEBUTTONUP:
                 //if(lasttype==event.type && lastbut==event.button.button) break; // why?? get event twice without it
                 switch(event.button.button)
@@ -1021,6 +1119,7 @@ void checkinput()
                 break;
         }
     }
+
     if(focused) { if(grabinput != (focused>0)) inputgrab(grabinput = focused>0, shouldgrab); focused = 0; }
     if(mousemoved) resetmousemotion();
 }
@@ -1165,8 +1264,48 @@ int getclockmillis()
 
 VAR(numcpus, 1, 1, 16);
 
+
+
+class Logger
+{
+private:
+    FILE* f;
+    const string dir = "../logs";
+
+public:
+    Logger()
+    {
+        create_dir();
+    }
+    ~Logger(){}
+
+    void create_dir()
+    {
+        // create dir if it doesn't exist
+        // https://stackoverflow.com/a/7430262
+        struct stat st = {0};
+        if (stat(dir, &st) == -1) 
+        {
+            mkdir(dir, 0700);
+        }
+    }
+    
+    void write(string data)
+    {
+        
+    }
+};
+
+
+
 int main(int argc, char **argv)
 {
+    round_event ev;
+    ev.timestamp = millis();
+    ev.ev_type = strdup("game");
+    ev.player_death = true;
+    this_round->events.add(ev);
+
     #ifdef WIN32
     //atexit((void (__cdecl *)(void))_CrtDumpMemoryLeaks);
     #ifndef _DEBUG

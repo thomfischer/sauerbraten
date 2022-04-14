@@ -1,6 +1,7 @@
 // weapon.cpp: all shooting and effects code, projectile management
 #include "game.h"
 
+
 namespace game
 {
     static const int MONSTERDAMAGEFACTOR = 4;
@@ -13,12 +14,10 @@ namespace game
         ivec dir;
     };
     vector<hitmsg> hits;
-
     VARP(maxdebris, 10, 25, 1000);
     VARP(maxbarreldebris, 5, 10, 1000);
-
+    
     ICOMMAND(getweapon, "", (), intret(player1->gunselect));
-
     void gunselect(int gun, fpsent *d)
     {
         if(gun!=d->gunselect)
@@ -792,6 +791,17 @@ namespace game
             return;
         }
         if(d->gunselect) d->ammo[d->gunselect]--;
+
+        // tflog shooting
+        if(d==player1)
+        {
+            round_event ev;
+            game_round* this_round = get_this_round();
+            ev.timestamp = millis();
+            ev.ev_type = strdup("game");
+            ev.shot = true;
+            this_round->events.add(ev);
+        }
 
         vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();
         float dist = to.dist(from);

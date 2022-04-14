@@ -1,5 +1,30 @@
 // the interface the game uses to access the engine
 
+struct round_event
+{
+    long int timestamp;
+    char* ev_type;        // game event, input event
+    // input events
+    char* input_type;     // MouseUp, KeyDown, etc
+    char* input_value;    // KEY_W, LMB
+    int delay_this;
+    // game events
+    bool shot;             // 1=hit, 0=miss, NULL=no shot
+    bool bot_death;
+    bool player_death;
+};
+
+struct game_round
+{
+    vector<round_event> events;
+    int round_number;
+    int kills;
+    int deaths;
+    float completion_time;
+    int delay_min;
+    int delay_max;
+};
+
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time
@@ -248,6 +273,9 @@ extern void renderentring(const extentity &e, float radius, int axis = 0);
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
+extern long millis();
+extern vector<struct game_round>* rounds;
+extern game_round* get_this_round();
 
 // rendertext
 extern bool setfont(const char *name);
