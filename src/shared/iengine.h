@@ -25,6 +25,22 @@ struct game_round
     int delay_max;
 };
 
+struct condition
+{
+    int roundnumber;
+    int baselatency;
+    int minvariance;
+    int maxvariance;
+};
+
+bool writeout_condition(game_round& round, condition& con)
+{
+    stream *f = openutf8file("foo.txt", "w");
+    f->printf("joe mama");
+    f->close();
+    return true;
+}
+
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time
@@ -234,6 +250,13 @@ extern void setlogfile(const char *fname);
 extern void closelogfile();
 extern void logoutfv(const char *fmt, va_list args);
 extern void logoutf(const char *fmt, ...) PRINTFARGS(1, 2);
+
+// tf study log
+extern FILE *getstudylogfile();
+extern void setstudylogfile(const char *fname);
+extern void closestudylogfile();
+extern void studylogoutfv(const char *fmt, va_list args);
+extern void studylogoutf(const char *fmt, ...) PRINTFARGS(1, 2);
 
 // menus
 extern vec menuinfrontofplayer();

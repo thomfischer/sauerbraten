@@ -39,6 +39,11 @@ game_round* this_round = new game_round;
 vector<game_round>* rounds = new vector<game_round>;
 
 game_round* get_this_round(){ return this_round; }
+void reset_round_struct()
+{
+    delete this_round;
+    this_round = new game_round;
+}
 
 long int millis()
 {
@@ -73,6 +78,7 @@ void cleanup()
     extern void clear_mdls();    clear_mdls();
     extern void clear_sound();   clear_sound();
     closelogfile();
+    closestudylogfile();
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
@@ -185,6 +191,10 @@ void writeinitcfg()
     f->printf("soundbufferlen %d\n", soundbufferlen);
     if(audiodriver[0]) f->printf("audiodriver %s\n", escapestring(audiodriver));
     delete f;
+
+    stream *g = openutf8file("test.txt", "w");
+    g->printf("foobar");
+    delete g;
 }
 
 COMMAND(quit, "");
@@ -999,12 +1009,12 @@ void checkinput()
     if(interceptkeysym) clearinterceptkey();
     bool mousemoved = false;
     int focused = 0;
-    conoutf("ev: %i \t dl: %i", events.length(), delayed_events.length());
-    // while(pumpevents(events))
-    while(delayed_pumpevents(events, delayed_events))
+    // conoutf("ev: %i \t dl: %i", events.length(), delayed_events.length());
+    while(pumpevents(events))
+    // while(delayed_pumpevents(events, delayed_events))
     {
-        // SDL_Event &event = events.remove();
-        SDL_Event &event = delayed_events.remove();
+        SDL_Event &event = events.remove();
+        // SDL_Event &event = delayed_events.remove();
 
         if(focused && event.type!=SDL_WINDOWEVENT) { if(grabinput != (focused>0)) inputgrab(grabinput = focused>0, shouldgrab); focused = 0; }
 
@@ -1316,6 +1326,8 @@ int main(int argc, char **argv)
     #endif
 
     setlogfile(NULL);
+    setstudylogfile("log.txt");
+    studylogoutf("pleaseworkffs");
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;

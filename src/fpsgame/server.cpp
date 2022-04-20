@@ -21,6 +21,10 @@ extern ENetAddress masteraddress;
 
 namespace server
 {
+    // tf study settings
+    static const int FRAG_LIMIT = 3;
+    int roundnumber = 0;
+
     struct server_entity            // server side version of "entity" type
     {
         int type;
@@ -2244,9 +2248,27 @@ namespace server
         return true;
     }
 
+    bool writeout_condition2(game_round& round, condition& con)
+    {
+        logoutf("foobar");
+        stream *f = openutf8file("foo.txt", "w");
+        if(!f) conoutf("cannot open file");
+        else conoutf("file opened");
+        f->printf("joe mama");
+        f->close();
+        return true;
+    }
+
     void checkintermission(bool force = false)
     {
-        if(gamemillis >= gamelimit && !interm && (force || !checkovertime()))
+        bool fraglimitreached = false;
+        loopvrev(clients)
+        {
+            if(clients[i]->state.frags >= FRAG_LIMIT) fraglimitreached = true;
+        }
+
+        if(fraglimitreached && !interm && (force || !checkovertime()))
+        // if(gamemillis >= gamelimit && !interm && (force || !checkovertime()))
         {
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();

@@ -6,6 +6,7 @@
 #define LOGSTRLEN 512
 
 static FILE *logfile = NULL;
+static FILE *studylogfile = NULL;
 
 void closelogfile()
 {
@@ -16,6 +17,15 @@ void closelogfile()
     }
 }
 
+void closestudylogfile()
+{
+    if(studylogfile)
+    {
+        fclose(studylogfile);
+        studylogfile = NULL;
+    }
+}
+
 FILE *getlogfile()
 {
 #ifdef WIN32
@@ -23,6 +33,11 @@ FILE *getlogfile()
 #else
     return logfile ? logfile : stdout;
 #endif
+}
+
+FILE* getstudylogfile()
+{
+    return studylogfile;
 }
 
 void setlogfile(const char *fname)
@@ -42,6 +57,14 @@ void logoutf(const char *fmt, ...)
     va_list args;
     va_start(args, fmt);
     logoutfv(fmt, args);
+    va_end(args);
+}
+
+void studylogoutf(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    studylogoutfv(fmt, args);
     va_end(args);
 }
 
@@ -987,6 +1010,12 @@ void logoutfv(const char *fmt, va_list args)
 void logoutfv(const char *fmt, va_list args)
 {
     FILE *f = getlogfile();
+    if(f) writelogv(f, fmt, args);
+}
+
+void studylogoutfv(const char *fmt, va_list args)
+{
+    FILE *f = getstudylogfile();
     if(f) writelogv(f, fmt, args);
 }
 
