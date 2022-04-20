@@ -8,6 +8,16 @@
 static FILE *logfile = NULL;
 static FILE *studylogfile = NULL;
 
+long int epoch_time_ms()
+{
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    long int ms = time.tv_sec * 1000 + time.tv_usec / 1000;
+    return ms;
+}
+
+extern game_round* get_this_round();
+
 void closelogfile()
 {
     if(logfile)

@@ -3,15 +3,13 @@
 struct round_event
 {
     long int timestamp;
-    char* ev_type;        // game event, input event
     // input events
     char* input_type;     // MouseUp, KeyDown, etc
     char* input_value;    // KEY_W, LMB
     int delay_this;
     // game events
-    bool shot;             // 1=hit, 0=miss, NULL=no shot
-    bool bot_death;
-    bool player_death;
+    char* event_name;
+    bool shot_hit;             // 1=hit, 0=miss, NULL=no shot
 };
 
 struct game_round
@@ -250,6 +248,9 @@ extern void closestudylogfile();
 extern void studylogoutfv(const char *fmt, va_list args);
 extern void studylogoutf(const char *fmt, ...) PRINTFARGS(1, 2);
 
+// tf main
+extern long int epoch_time_ms();
+
 // menus
 extern vec menuinfrontofplayer();
 extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);
@@ -288,7 +289,6 @@ extern void renderentring(const extentity &e, float radius, int axis = 0);
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
-extern long millis();
 extern vector<struct game_round>* rounds;
 extern game_round* get_this_round();
 

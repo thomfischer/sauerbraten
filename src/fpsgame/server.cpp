@@ -22,7 +22,7 @@ extern ENetAddress masteraddress;
 namespace server
 {
     // tf study settings
-    static const int FRAG_LIMIT = 3;
+    static const int FRAG_LIMIT = 10;
     int roundnumber = 0;
 
     struct server_entity            // server side version of "entity" type
@@ -2248,17 +2248,6 @@ namespace server
         return true;
     }
 
-    bool writeout_condition2(game_round& round, condition& con)
-    {
-        logoutf("foobar");
-        stream *f = openutf8file("foo.txt", "w");
-        if(!f) conoutf("cannot open file");
-        else conoutf("file opened");
-        f->printf("joe mama");
-        f->close();
-        return true;
-    }
-
     void checkintermission(bool force = false)
     {
         bool fraglimitreached = false;
@@ -2379,6 +2368,7 @@ namespace server
         }
     }
 
+
     void shotevent::process(clientinfo *ci)
     {
         gamestate &gs = ci->state;
@@ -2402,6 +2392,14 @@ namespace server
             case GUN_GL: gs.grenades.add(id); break;
             default:
             {
+                //tflog
+                // not sure why this only triggers on player shots
+                round_event ev;
+                game_round* this_round = get_this_round();
+                ev.timestamp = epoch_time_ms();
+                ev.event_name = strdup("shot fired");
+                ev.shot_hit = false;
+
                 int totalrays = 0, maxrays = guns[gun].rays;
                 loopv(hits)
                 {
@@ -2413,8 +2411,16 @@ namespace server
                     if(totalrays>maxrays) continue;
                     int damage = h.rays*guns[gun].damage;
                     if(gs.quadmillis) damage *= 4;
+
+                    // tf
+                    ev.shot_hit = true;
+
                     dodamage(target, ci, damage, gun, h.dir);
                 }
+
+                // tf
+                this_round->events.add(ev);
+
                 break;
             }
         }

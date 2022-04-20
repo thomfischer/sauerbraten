@@ -598,6 +598,7 @@ namespace game
 
     void newmap(int size)
     {
+        conoutf("map changed");
         addmsg(N_NEWMAP, "ri", size);
     }
 

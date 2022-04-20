@@ -9,49 +9,17 @@
 #include "SDL_syswm.h"
 #endif
 
-
-// struct round_event
-// {
-//     long int timestamp;
-//     string ev_type;        // game event, input event
-//     // input events
-//     string input_type;     // MouseUp, KeyDown, etc
-//     string input_value;    // KEY_W, LMB
-//     int delay_this;
-//     // game events
-//     bool shot;             // 1=hit, 0=miss, NULL=no shot
-//     bool bot_death;
-//     bool player_death;
-// };
-
-// struct game_round
-// {
-//     int round_number;
-//     vector<round_event> events;
-//     int kills;
-//     int deaths;
-//     float completion_time;
-//     int delay_min;
-//     int delay_max;
-// } *this_round;
-
 game_round* this_round = new game_round;
 vector<game_round>* rounds = new vector<game_round>;
-
 game_round* get_this_round(){ return this_round; }
+
 void reset_round_struct()
 {
     delete this_round;
     this_round = new game_round;
 }
 
-long int millis()
-{
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    long int ms = time.tv_sec * 1000 + time.tv_usec / 1000;
-    return ms;
-}
+
 
 
 extern void cleargamma();
@@ -93,9 +61,9 @@ void quit()                     // normal exit
     {
         if(this_round->events[i].input_value)
         {
-            logoutf("%ld \t %s \t %s", this_round->events[i].timestamp, this_round->events[i].ev_type, this_round->events[i].input_value);
+            logoutf("%ld \t %s \t %s", this_round->events[i].timestamp, this_round->events[i].input_type, this_round->events[i].input_value);
         }
-        else logoutf("%ld \t %s", this_round->events[i].timestamp, this_round->events[i].ev_type);
+        else logoutf("%ld \t %s", this_round->events[i].timestamp, this_round->events[i].event_name);
     }
 
     writeinitcfg();
@@ -1037,8 +1005,7 @@ void checkinput()
                  
                     // event
                     round_event re;
-                    re.timestamp = millis();
-                    re.ev_type = strdup("input");
+                    re.timestamp = epoch_time_ms();
                     re.input_type = strdup("keyup");
                     re.input_value = strdup(SDL_GetKeyName(event.key.keysym.sym));
                     this_round->events.add(re);
@@ -1306,12 +1273,6 @@ public:
 
 int main(int argc, char **argv)
 {
-    round_event ev;
-    ev.timestamp = millis();
-    ev.ev_type = strdup("game");
-    ev.player_death = true;
-    this_round->events.add(ev);
-
     #ifdef WIN32
     //atexit((void (__cdecl *)(void))_CrtDumpMemoryLeaks);
     #ifndef _DEBUG

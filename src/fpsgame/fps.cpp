@@ -404,9 +404,8 @@ namespace game
             //tflog event
             round_event re;
             game_round* this_round = get_this_round();
-            re.timestamp = millis();
-            re.ev_type = strdup("game");
-            re.shot = true;
+            re.timestamp = epoch_time_ms();
+            re.event_name = strdup("shot hit");
             this_round->events.add(re);
 
             // part of the vanilla code
@@ -450,9 +449,8 @@ namespace game
             //tflog event
             round_event re;
             game_round* this_round = get_this_round();
-            re.timestamp = millis();
-            re.ev_type = strdup("game");
-            re.player_death = true;
+            re.timestamp = epoch_time_ms();
+            re.event_name = strdup("player death");
             this_round->events.add(re);
 
 
@@ -469,9 +467,8 @@ namespace game
             //tflog event
             round_event re;
             game_round* this_round = get_this_round();
-            re.timestamp = millis();
-            re.ev_type = strdup("game");
-            re.bot_death = true;
+            re.timestamp = epoch_time_ms();
+            re.event_name = strdup("bot killed");
             this_round->events.add(re);
 
 
@@ -555,6 +552,13 @@ namespace game
             disablezoom();
 
             execident("intermission");
+
+            //tflog event
+            round_event re;
+            game_round* this_round = get_this_round();
+            re.timestamp = epoch_time_ms();
+            re.event_name = strdup("round end");
+            this_round->events.add(re);
         }
     }
 
@@ -686,6 +690,13 @@ namespace game
         lasthit = 0;
 
         execident("mapstart");
+
+        //tflog event
+        round_event re;
+        game_round* this_round = get_this_round();
+        re.timestamp = epoch_time_ms();
+        re.event_name = strdup("round start");
+        this_round->events.add(re);
     }
 
     void loadingmap(const char *name)

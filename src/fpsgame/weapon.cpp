@@ -793,15 +793,14 @@ namespace game
         if(d->gunselect) d->ammo[d->gunselect]--;
 
         // tflog shooting
-        if(d==player1)
-        {
-            round_event ev;
-            game_round* this_round = get_this_round();
-            ev.timestamp = millis();
-            ev.ev_type = strdup("game");
-            ev.shot = true;
-            this_round->events.add(ev);
-        }
+        // if(d==player1)
+        // {
+        //     round_event ev;
+        //     game_round* this_round = get_this_round();
+        //     ev.timestamp = epoch_time_ms();
+        //     ev.event_name = strdup("shot fired");
+        //     this_round->events.add(ev);
+        // }
 
         vec from = d->o, to = targ, dir = vec(to).sub(from).safenormalize();
         float dist = to.dist(from);
