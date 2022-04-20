@@ -97,7 +97,7 @@ void quit()                     // normal exit
         }
         else logoutf("%ld \t %s", this_round->events[i].timestamp, this_round->events[i].ev_type);
     }
-    
+
     writeinitcfg();
     writeservercfg();
     abortconnect();
@@ -191,10 +191,6 @@ void writeinitcfg()
     f->printf("soundbufferlen %d\n", soundbufferlen);
     if(audiodriver[0]) f->printf("audiodriver %s\n", escapestring(audiodriver));
     delete f;
-
-    stream *g = openutf8file("test.txt", "w");
-    g->printf("foobar");
-    delete g;
 }
 
 COMMAND(quit, "");
@@ -1326,8 +1322,6 @@ int main(int argc, char **argv)
     #endif
 
     setlogfile(NULL);
-    setstudylogfile("log.txt");
-    studylogoutf("pleaseworkffs");
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1477,6 +1471,9 @@ int main(int argc, char **argv)
     identflags |= IDF_PERSIST;
 
     logoutf("init: mainloop");
+
+    setstudylogfile("test.txt");
+    studylogoutf("pleaseworkffs");
 
     if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
 

@@ -52,6 +52,18 @@ void setlogfile(const char *fname)
     if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
 }
 
+void setstudylogfile(const char *fname)
+{
+    closestudylogfile();
+    if(fname && fname[0])
+    {
+        fname = findfile(fname, "w");
+        if(fname) studylogfile = fopen(fname, "w");
+    }
+    FILE *f = getstudylogfile();
+    if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
+}
+
 void logoutf(const char *fmt, ...)
 {
     va_list args;

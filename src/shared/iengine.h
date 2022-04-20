@@ -33,14 +33,6 @@ struct condition
     int maxvariance;
 };
 
-bool writeout_condition(game_round& round, condition& con)
-{
-    stream *f = openutf8file("foo.txt", "w");
-    f->printf("joe mama");
-    f->close();
-    return true;
-}
-
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time
