@@ -863,5 +863,6 @@ namespace server
     extern bool delayspawn(int type);
 }
 
+
 #endif
 

@@ -6,17 +6,6 @@
 #define LOGSTRLEN 512
 
 static FILE *logfile = NULL;
-static FILE *studylogfile = NULL;
-
-long int epoch_time_ms()
-{
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    long int ms = time.tv_sec * 1000 + time.tv_usec / 1000;
-    return ms;
-}
-
-extern game_round* get_this_round();
 
 void closelogfile()
 {
@@ -27,15 +16,6 @@ void closelogfile()
     }
 }
 
-void closestudylogfile()
-{
-    if(studylogfile)
-    {
-        fclose(studylogfile);
-        studylogfile = NULL;
-    }
-}
-
 FILE *getlogfile()
 {
 #ifdef WIN32
@@ -43,11 +23,6 @@ FILE *getlogfile()
 #else
     return logfile ? logfile : stdout;
 #endif
-}
-
-FILE* getstudylogfile()
-{
-    return studylogfile;
 }
 
 void setlogfile(const char *fname)
@@ -62,18 +37,6 @@ void setlogfile(const char *fname)
     if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
 }
 
-void setstudylogfile(const char *fname)
-{
-    closestudylogfile();
-    if(fname && fname[0])
-    {
-        fname = findfile(fname, "w");
-        if(fname) studylogfile = fopen(fname, "w");
-    }
-    FILE *f = getstudylogfile();
-    if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
-}
-
 void logoutf(const char *fmt, ...)
 {
     va_list args;
@@ -81,15 +44,6 @@ void logoutf(const char *fmt, ...)
     logoutfv(fmt, args);
     va_end(args);
 }
-
-void studylogoutf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    studylogoutfv(fmt, args);
-    va_end(args);
-}
-
 
 static void writelog(FILE *file, const char *buf)
 {
@@ -1035,11 +989,7 @@ void logoutfv(const char *fmt, va_list args)
     if(f) writelogv(f, fmt, args);
 }
 
-void studylogoutfv(const char *fmt, va_list args)
-{
-    FILE *f = getstudylogfile();
-    if(f) writelogv(f, fmt, args);
-}
+
 
 #endif
 

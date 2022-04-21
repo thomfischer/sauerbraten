@@ -9,19 +9,6 @@
 #include "SDL_syswm.h"
 #endif
 
-game_round* this_round = new game_round;
-vector<game_round>* rounds = new vector<game_round>;
-game_round* get_this_round(){ return this_round; }
-
-void reset_round_struct()
-{
-    delete this_round;
-    this_round = new game_round;
-}
-
-
-
-
 extern void cleargamma();
 int t_key = 0;
 int t_mouse = 0;
@@ -46,7 +33,7 @@ void cleanup()
     extern void clear_mdls();    clear_mdls();
     extern void clear_sound();   clear_sound();
     closelogfile();
-    closestudylogfile();
+    study::closestudylogfile();
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
@@ -57,13 +44,14 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
-    for(int i=0; i<this_round->events.length(); ++i)
+    study::game_round* round = study::get_this_round();
+    for(int i=0; i<round->events.length(); ++i)
     {
-        if(this_round->events[i].input_value)
+        if(round->events[i].input_value)
         {
-            logoutf("%ld \t %s \t %s", this_round->events[i].timestamp, this_round->events[i].input_type, this_round->events[i].input_value);
+            logoutf("%ld \t %s \t %s", round->events[i].timestamp, round->events[i].input_type, round->events[i].input_value);
         }
-        else logoutf("%ld \t %s", this_round->events[i].timestamp, this_round->events[i].event_name);
+        else logoutf("%ld \t %s", round->events[i].timestamp, round->events[i].event_name);
     }
 
     writeinitcfg();
@@ -1004,11 +992,11 @@ void checkinput()
                     processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED, event.key.keysym.mod | SDL_GetModState());
                  
                     // event
-                    round_event re;
-                    re.timestamp = epoch_time_ms();
+                    study::round_event re;
+                    re.timestamp = study::epoch_time_ms();
                     re.input_type = strdup("keyup");
                     re.input_value = strdup(SDL_GetKeyName(event.key.keysym.sym));
-                    this_round->events.add(re);
+                    study::get_this_round()->events.add(re);
                 }
                 break;
 
@@ -1237,40 +1225,6 @@ int getclockmillis()
 
 VAR(numcpus, 1, 1, 16);
 
-
-
-class Logger
-{
-private:
-    FILE* f;
-    const string dir = "../logs";
-
-public:
-    Logger()
-    {
-        create_dir();
-    }
-    ~Logger(){}
-
-    void create_dir()
-    {
-        // create dir if it doesn't exist
-        // https://stackoverflow.com/a/7430262
-        struct stat st = {0};
-        if (stat(dir, &st) == -1) 
-        {
-            mkdir(dir, 0700);
-        }
-    }
-    
-    void write(string data)
-    {
-        
-    }
-};
-
-
-
 int main(int argc, char **argv)
 {
     #ifdef WIN32
@@ -1283,6 +1237,11 @@ int main(int argc, char **argv)
     #endif
 
     setlogfile(NULL);
+    study::init();
+    study::round_event ev;
+    ev.timestamp = 500;
+    ev.event_name = strdup("foo");
+    study::get_this_round()->events.add(ev);
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1433,8 +1392,8 @@ int main(int argc, char **argv)
 
     logoutf("init: mainloop");
 
-    setstudylogfile("test.txt");
-    studylogoutf("pleaseworkffs");
+    study::setstudylogfile("test500.txt");
+    study::studylogoutf("pleaseworkffs");
 
     if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
 

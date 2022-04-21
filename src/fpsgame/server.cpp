@@ -2392,13 +2392,14 @@ namespace server
             case GUN_GL: gs.grenades.add(id); break;
             default:
             {
+                #ifndef STANDALONE
                 //tflog
                 // not sure why this only triggers on player shots
-                round_event ev;
-                game_round* this_round = get_this_round();
-                ev.timestamp = epoch_time_ms();
+                study::round_event ev;
+                ev.timestamp = study::epoch_time_ms();
                 ev.event_name = strdup("shot fired");
                 ev.shot_hit = false;
+                #endif
 
                 int totalrays = 0, maxrays = guns[gun].rays;
                 loopv(hits)
@@ -2412,14 +2413,17 @@ namespace server
                     int damage = h.rays*guns[gun].damage;
                     if(gs.quadmillis) damage *= 4;
 
+                    #ifndef STANDALONE
                     // tf
                     ev.shot_hit = true;
+                    #endif
 
                     dodamage(target, ci, damage, gun, h.dir);
                 }
-
+                #ifndef STANDALONE
                 // tf
-                this_round->events.add(ev);
+                study::get_this_round()->events.add(ev);
+                #endif
 
                 break;
             }

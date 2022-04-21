@@ -402,11 +402,10 @@ namespace game
         else if(actor==player1)
         {
             //tflog event
-            round_event re;
-            game_round* this_round = get_this_round();
-            re.timestamp = epoch_time_ms();
+            study::round_event re;
+            re.timestamp = study::epoch_time_ms();
             re.event_name = strdup("shot hit");
-            this_round->events.add(re);
+            study::get_this_round()->events.add(re);
 
             // part of the vanilla code
             return;
@@ -447,11 +446,10 @@ namespace game
         if(d==player1)
         {
             //tflog event
-            round_event re;
-            game_round* this_round = get_this_round();
-            re.timestamp = epoch_time_ms();
+            study::round_event re;
+            re.timestamp = study::epoch_time_ms();
             re.event_name = strdup("player death");
-            this_round->events.add(re);
+            study::get_this_round()->events.add(re);
 
 
             if(deathscore) showscores(true);
@@ -465,11 +463,10 @@ namespace game
         else
         {
             //tflog event
-            round_event re;
-            game_round* this_round = get_this_round();
-            re.timestamp = epoch_time_ms();
+            study::round_event re;
+            re.timestamp = study::epoch_time_ms();
             re.event_name = strdup("bot killed");
-            this_round->events.add(re);
+            study::get_this_round()->events.add(re);
 
 
             d->move = d->strafe = 0;
@@ -554,11 +551,10 @@ namespace game
             execident("intermission");
 
             //tflog event
-            round_event re;
-            game_round* this_round = get_this_round();
-            re.timestamp = epoch_time_ms();
+            study::round_event re;
+            re.timestamp = study::epoch_time_ms();
             re.event_name = strdup("round end");
-            this_round->events.add(re);
+            study::get_this_round()->events.add(re);
         }
     }
 
@@ -692,11 +688,10 @@ namespace game
         execident("mapstart");
 
         //tflog event
-        round_event re;
-        game_round* this_round = get_this_round();
-        re.timestamp = epoch_time_ms();
+        study::round_event re;
+        re.timestamp = study::epoch_time_ms();
         re.event_name = strdup("round start");
-        this_round->events.add(re);
+        study::get_this_round()->events.add(re);
     }
 
     void loadingmap(const char *name)

@@ -607,6 +607,7 @@ namespace recorder
     extern void cleanup();
 }
 
+
 #endif
 
 #endif

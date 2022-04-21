@@ -1,36 +1,5 @@
 // the interface the game uses to access the engine
 
-struct round_event
-{
-    long int timestamp;
-    // input events
-    char* input_type;     // MouseUp, KeyDown, etc
-    char* input_value;    // KEY_W, LMB
-    int delay_this;
-    // game events
-    char* event_name;
-    bool shot_hit;             // 1=hit, 0=miss, NULL=no shot
-};
-
-struct game_round
-{
-    vector<round_event> events;
-    int round_number;
-    int kills;
-    int deaths;
-    float completion_time;
-    int delay_min;
-    int delay_max;
-};
-
-struct condition
-{
-    int roundnumber;
-    int baselatency;
-    int minvariance;
-    int maxvariance;
-};
-
 extern int curtime;                     // current frame time
 extern int lastmillis;                  // last time
 extern int elapsedtime;                 // elapsed frame time
@@ -241,16 +210,6 @@ extern void closelogfile();
 extern void logoutfv(const char *fmt, va_list args);
 extern void logoutf(const char *fmt, ...) PRINTFARGS(1, 2);
 
-// tf study log
-extern FILE *getstudylogfile();
-extern void setstudylogfile(const char *fname);
-extern void closestudylogfile();
-extern void studylogoutfv(const char *fmt, va_list args);
-extern void studylogoutf(const char *fmt, ...) PRINTFARGS(1, 2);
-
-// tf main
-extern long int epoch_time_ms();
-
 // menus
 extern vec menuinfrontofplayer();
 extern void newgui(char *name, char *contents, char *header = NULL, char *init = NULL);
@@ -289,8 +248,6 @@ extern void renderentring(const extentity &e, float radius, int axis = 0);
 
 // main
 extern void fatal(const char *s, ...) PRINTFARGS(1, 2);
-extern vector<struct game_round>* rounds;
-extern game_round* get_this_round();
 
 // rendertext
 extern bool setfont(const char *name);
@@ -624,3 +581,58 @@ extern void g3d_cursorpos(float &x, float &y);
 extern void g3d_resetcursor();
 extern void g3d_limitscale(float scale);
 
+
+// tf study
+namespace study
+{
+    struct round_event
+    {
+        long int timestamp;
+        // input events
+        char* input_type;     // MouseUp, KeyDown, etc
+        char* input_value;    // KEY_W, LMB
+        int delay_this;
+        // game events
+        char* event_name;
+        bool shot_hit;             // 1=hit, 0=miss, NULL=no shot
+    };
+
+    struct game_round
+    {
+        vector<round_event> events;
+        int round_number;
+        int kills;
+        int deaths;
+        float completion_time;
+        int delay_min;
+        int delay_max;
+    };
+
+    struct condition
+    {
+        int roundnumber;
+        int baselatency;
+        int minvariance;
+        int maxvariance;
+    };
+
+    extern FILE *studylogfile;
+    extern vector<game_round>* rounds;
+    extern game_round* this_round;
+
+    extern FILE* getstudylogfile();
+    extern void closestudylogfile();
+    extern void setstudylogfile(const char *fname);
+    extern void studylogoutf(const char *fmt, ...);
+    extern void studylogoutfv(const char *fmt, va_list args);
+    // extern void writelog(FILE *file, const char *buf);
+    // extern void writelogv(FILE *file, const char *fmt, va_list args);
+
+
+    extern uint64_t epoch_time_ms();
+    extern game_round* get_this_round();
+    extern vector<game_round>* get_all_rounds();
+    extern void reset_round_struct();
+    extern void init();
+    extern void write_to_file();
+}
