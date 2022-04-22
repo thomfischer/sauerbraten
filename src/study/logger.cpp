@@ -43,7 +43,7 @@ void write_to_file()
     }
     // write summary log file with all values but the events
     string filename;
-    formatstring(filename, "p%i_r%i_sum.txt", participant_id, this_round->round_number);
+    formatstring(filename, "logs/p%i_r%i_sum.txt", participant_id, this_round->round_number);
     logoutf("%i", this_round->round_number);
     logoutf(filename);
     setsummarylogfile(filename);
@@ -54,7 +54,7 @@ void write_to_file()
     summarylogoutf("delay_max:%i", this_round->delay_max);
 
     // log events to csv
-    formatstring(filename, "p%i_r%i_events.csv", participant_id, this_round->round_number);
+    formatstring(filename, "logs/p%i_r%i_events.csv", participant_id, this_round->round_number);
     seteventlogfile(filename);
     // write header
     eventlogoutf(
