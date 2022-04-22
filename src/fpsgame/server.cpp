@@ -22,7 +22,7 @@ extern ENetAddress masteraddress;
 namespace server
 {
     // tf study settings
-    static const int FRAG_LIMIT = 10;
+    static const int FRAG_LIMIT = 3;
     int roundnumber = 0;
 
     struct server_entity            // server side version of "entity" type

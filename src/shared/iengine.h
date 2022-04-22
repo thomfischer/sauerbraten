@@ -605,9 +605,10 @@ namespace study
         int round_number;
         int kills;
         int deaths;
-        float completion_time;
         int delay_min;
         int delay_max;
+        long int round_start;
+        long int round_end;
     };
 
     struct condition
@@ -625,10 +626,11 @@ namespace study
 
     extern FILE* getsummarylogfile();
     extern FILE* geteventlogfile();
+    extern void setfiles(string playername);
     extern void closesummarylogfile();
     extern void closeeventlogfile();
-    extern void setsummarylogfile(const char *fname);
-    extern void seteventlogfile(const char *fname);
+    extern int setsummarylogfile(const char *fname);
+    extern int seteventlogfile(const char *fname);
     extern void summarylogoutf(const char *fmt, ...);
     extern void summarylogoutfv(const char *fmt, va_list args);   
     extern void eventlogoutf(const char *fmt, ...);

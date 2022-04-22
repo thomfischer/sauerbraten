@@ -545,4 +545,4 @@ engine/master-standalone.o: shared/cube.h shared/tools.h shared/geom.h
 engine/master-standalone.o: shared/ents.h shared/command.h shared/iengine.h
 engine/master-standalone.o: shared/igame.h
 
-study/logger.o: engine/engine.h shared/tools.h 
+study/logger.o: engine/engine.h shared/tools.h fpsgame/game.h

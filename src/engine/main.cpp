@@ -43,8 +43,6 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
-    study::write_to_file();
-
     writeinitcfg();
     writeservercfg();
     abortconnect();
@@ -1052,17 +1050,43 @@ void checkinput()
             case SDL_MOUSEBUTTONDOWN:
                 t_mouse = event.button.timestamp;
             case SDL_MOUSEBUTTONUP:
+                char* button_name;
+                
                 //if(lasttype==event.type && lastbut==event.button.button) break; // why?? get event twice without it
                 switch(event.button.button)
                 {
-                    case SDL_BUTTON_LEFT: processkey(-1, event.button.state==SDL_PRESSED); break;
-                    case SDL_BUTTON_MIDDLE: processkey(-2, event.button.state==SDL_PRESSED); break;
-                    case SDL_BUTTON_RIGHT: processkey(-3, event.button.state==SDL_PRESSED); break;
-                    case SDL_BUTTON_X1: processkey(-6, event.button.state==SDL_PRESSED); break;
-                    case SDL_BUTTON_X2: processkey(-7, event.button.state==SDL_PRESSED); break;
+                    case SDL_BUTTON_LEFT:
+                        processkey(-1, event.button.state==SDL_PRESSED);
+                        button_name = strdup("mouse_left");
+                        break;
+                    case SDL_BUTTON_MIDDLE:
+                        processkey(-2, event.button.state==SDL_PRESSED);
+                        button_name = strdup("mouse_middle");
+                        break;
+                    case SDL_BUTTON_RIGHT:
+                        processkey(-3, event.button.state==SDL_PRESSED);
+                        button_name = strdup("mouse_right");
+                        break;
+                    case SDL_BUTTON_X1:
+                        processkey(-6, event.button.state==SDL_PRESSED);
+                        button_name = strdup("mouse_x1");
+                        break;
+                    case SDL_BUTTON_X2:
+                        processkey(-7, event.button.state==SDL_PRESSED);
+                        button_name = strdup("mouse_x2");
+                        break;
+                    default:
+                        button_name = strdup("mouse_error");
+                        break;
                 }
-                //lasttype = event.type;
-                //lastbut = event.button.button;
+
+                // event
+                study::round_event re;
+                re.timestamp = study::epoch_time_ms();
+                re.input_type = strdup("mouseup");
+                re.input_value = button_name;
+                study::get_this_round()->events.add(re);
+
                 break;
 
             case SDL_MOUSEWHEEL:
@@ -1228,7 +1252,6 @@ int main(int argc, char **argv)
     #endif
 
     setlogfile(NULL);
-    study::set_participant_id(1);
     study::get_this_round()->round_number = 1;
 
     int dedicated = 0;

@@ -1,5 +1,4 @@
 #include "engine.h"
-#include "game.h"
 
 #define LOGSTRLEN 512
 
@@ -28,31 +27,41 @@ vector<game_round>* get_all_rounds()
     return rounds;
 }
 
+void setfiles(string playername)
+{
+    string filename;
+    formatstring(filename, "logs/%s_r%i_sum.txt", playername, this_round->round_number);
+    if(setsummarylogfile(filename) == 0)
+    {
+        conoutf(CON_ERROR, "\f3ERROR: file for this participant and round already exists!");
+    }
+
+    formatstring(filename, "logs/%s_r%i_events.csv", playername, this_round->round_number);
+    if(seteventlogfile(filename) == 0)
+    {
+        conoutf(CON_ERROR, "\f3ERROR: file for this participant and round already exists!");
+    }
+}
 
 void write_to_file()
 {
     // overwrite possibly unset variables with -1; would be sizeof var otherwise
-    if(!this_round->completion_time) this_round->completion_time = -1;
+    if(!this_round->round_start) this_round->round_start = -1;
+    if(!this_round->round_end) this_round->round_end = -1;
     if(!this_round->kills) this_round->kills = -1;
     if(!this_round->deaths) this_round->deaths = -1;
     if(!this_round->delay_max) this_round->delay_max = -1;
     if(!this_round->delay_min) this_round->delay_min = -1;
 
     // write summary log file with all values but the events
-    string filename;
-    formatstring(filename, "logs/%s_r%i_sum.txt", game::player1->name, this_round->round_number);
-    logoutf("%i", this_round->round_number);
-    logoutf(filename);
-    setsummarylogfile(filename);
-    summarylogoutf("TCS:%li", this_round->completion_time);
+    summarylogoutf("round_start:%li", this_round->round_start);
+    summarylogoutf("round_end:%li", this_round->round_end);
     summarylogoutf("deaths:%i", this_round->deaths);
     summarylogoutf("kills:%i", this_round->kills);
     summarylogoutf("delay_min:%i", this_round->delay_min);
     summarylogoutf("delay_max:%i", this_round->delay_max);
 
     // log events to csv
-    formatstring(filename, "logs/%s_r%i_events.csv", game::player1->name, this_round->round_number);
-    seteventlogfile(filename);
     // write header
     eventlogoutf(
         "timestamp;event_name;input_type;input_value;delay;shot_hit"
@@ -61,6 +70,13 @@ void write_to_file()
     for(int i=0; i<this_round->events.length(); ++i)
     {
         round_event ev = this_round->events[i];
+
+        // drop all inputs made before or after rounds (e.g. in menus)
+        if(ev.input_value
+        && (ev.timestamp > this_round->round_end
+            || ev.timestamp < this_round->round_start))
+        { continue; }
+
         eventlogoutf(
             "%li;%s;%s;%s;%i;%i",
             ev.timestamp,
@@ -71,6 +87,7 @@ void write_to_file()
             ev.shot_hit
         );
     }
+    logoutf("finito");
 
     closeeventlogfile();
     closesummarylogfile();
@@ -107,17 +124,20 @@ FILE* geteventlogfile()
     return eventlogfile;
 }
 
-void seteventlogfile(const char *fname)
+int seteventlogfile(const char *fname)
 {
     closeeventlogfile();
     if(fname && fname[0])
     {
         // x prevents overriding existing files and therefore previous logs by accident
         fname = findfile(fname, "wx"); 
+        conoutf(fname);
         if(fname) eventlogfile = fopen(fname, "wx");
+        if(summarylogfile == 0) return 0;
     }
     FILE *f = geteventlogfile();
     if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
+    return 1;
 }
 
 FILE* getsummarylogfile()
@@ -125,16 +145,18 @@ FILE* getsummarylogfile()
     return summarylogfile;
 }
 
-void setsummarylogfile(const char *fname)
+int setsummarylogfile(const char *fname)
 {
     closesummarylogfile();
     if(fname && fname[0])
     {
         fname = findfile(fname, "wx");
         if(fname) summarylogfile = fopen(fname, "wx");
+        if(summarylogfile == 0) return 0;
     }
     FILE *f = getsummarylogfile();
     if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
+    return 1;
 }
 
 void summarylogoutf(const char *fmt, ...)

@@ -555,6 +555,10 @@ namespace game
             re.timestamp = study::epoch_time_ms();
             re.event_name = strdup("round end");
             study::get_this_round()->events.add(re);
+            study::get_this_round()->round_end = re.timestamp;
+
+            study::write_to_file();
+            study::reset_round_struct();
         }
     }
 
@@ -687,11 +691,15 @@ namespace game
 
         execident("mapstart");
 
+
+        // tf
+        study::setfiles(player1->name);
         //tflog event
         study::round_event re;
         re.timestamp = study::epoch_time_ms();
         re.event_name = strdup("round start");
         study::get_this_round()->events.add(re);
+        study::get_this_round()->round_start = re.timestamp;
     }
 
     void loadingmap(const char *name)
