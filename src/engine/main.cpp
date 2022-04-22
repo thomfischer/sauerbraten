@@ -33,7 +33,6 @@ void cleanup()
     extern void clear_mdls();    clear_mdls();
     extern void clear_sound();   clear_sound();
     closelogfile();
-    study::closestudylogfile();
     #ifdef __APPLE__
         if(screen) SDL_SetWindowFullscreen(screen, 0);
     #endif
@@ -44,15 +43,7 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
-    study::game_round* round = study::get_this_round();
-    for(int i=0; i<round->events.length(); ++i)
-    {
-        if(round->events[i].input_value)
-        {
-            logoutf("%ld \t %s \t %s", round->events[i].timestamp, round->events[i].input_type, round->events[i].input_value);
-        }
-        else logoutf("%ld \t %s", round->events[i].timestamp, round->events[i].event_name);
-    }
+    study::write_to_file();
 
     writeinitcfg();
     writeservercfg();
@@ -1237,11 +1228,8 @@ int main(int argc, char **argv)
     #endif
 
     setlogfile(NULL);
-    study::init();
-    study::round_event ev;
-    ev.timestamp = 500;
-    ev.event_name = strdup("foo");
-    study::get_this_round()->events.add(ev);
+    study::set_participant_id(1);
+    study::get_this_round()->round_number = 1;
 
     int dedicated = 0;
     char *load = NULL, *initscript = NULL;
@@ -1391,9 +1379,6 @@ int main(int argc, char **argv)
     identflags |= IDF_PERSIST;
 
     logoutf("init: mainloop");
-
-    study::setstudylogfile("test500.txt");
-    study::studylogoutf("pleaseworkffs");
 
     if(execfile("once.cfg", false)) remove(findfile("once.cfg", "rb"));
 

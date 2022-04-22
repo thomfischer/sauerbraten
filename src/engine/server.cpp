@@ -57,7 +57,7 @@ static void writelog(FILE *file, const char *buf)
     }
 }
 
-static void writelogv(FILE *file, const char *fmt, va_list args)
+void writelogv(FILE *file, const char *fmt, va_list args)
 {
     static char buf[LOGSTRLEN];
     vformatstring(buf, fmt, args, sizeof(buf));

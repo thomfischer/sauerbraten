@@ -476,6 +476,8 @@ extern void sendserverinforeply(ucharbuf &p);
 extern bool requestmaster(const char *req);
 extern bool requestmasterf(const char *fmt, ...) PRINTFARGS(1, 2);
 extern bool isdedicatedserver();
+extern void writelogv(FILE *file, const char *fmt, va_list args);
+
 
 // client
 extern void sendclientpacket(ENetPacket *packet, int chan);
@@ -616,23 +618,28 @@ namespace study
         int maxvariance;
     };
 
-    extern FILE *studylogfile;
+    extern int participant_id;
+    extern FILE *eventlogfile;
+    extern FILE *summarylogfile;
     extern vector<game_round>* rounds;
     extern game_round* this_round;
 
-    extern FILE* getstudylogfile();
-    extern void closestudylogfile();
-    extern void setstudylogfile(const char *fname);
-    extern void studylogoutf(const char *fmt, ...);
-    extern void studylogoutfv(const char *fmt, va_list args);
-    // extern void writelog(FILE *file, const char *buf);
-    // extern void writelogv(FILE *file, const char *fmt, va_list args);
+    extern void set_participant_id(int id);
 
+    extern FILE* getsummarylogfile();
+    extern FILE* geteventlogfile();
+    extern void closesummarylogfile();
+    extern void closeeventlogfile();
+    extern void setsummarylogfile(const char *fname);
+    extern void seteventlogfile(const char *fname);
+    extern void summarylogoutf(const char *fmt, ...);
+    extern void summarylogoutfv(const char *fmt, va_list args);   
+    extern void eventlogoutf(const char *fmt, ...);
+    extern void eventlogoutfv(const char *fmt, va_list args);
 
     extern uint64_t epoch_time_ms();
     extern game_round* get_this_round();
     extern vector<game_round>* get_all_rounds();
     extern void reset_round_struct();
-    extern void init();
     extern void write_to_file();
 }
