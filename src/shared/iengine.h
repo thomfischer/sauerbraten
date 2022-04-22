@@ -618,13 +618,10 @@ namespace study
         int maxvariance;
     };
 
-    extern int participant_id;
     extern FILE *eventlogfile;
     extern FILE *summarylogfile;
     extern vector<game_round>* rounds;
     extern game_round* this_round;
-
-    extern void set_participant_id(int id);
 
     extern FILE* getsummarylogfile();
     extern FILE* geteventlogfile();

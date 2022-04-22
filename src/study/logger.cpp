@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "game.h"
 
 #define LOGSTRLEN 512
 
@@ -6,16 +7,10 @@
 namespace study
 {
 
-int participant_id = NULL;
 FILE* eventlogfile = NULL;
 FILE* summarylogfile = NULL;
 game_round* this_round = new game_round;
 vector<game_round>* rounds = new vector<game_round>;
-
-void set_participant_id(int id)
-{
-    participant_id = id;
-}
 
 void reset_round_struct()
 {
@@ -36,14 +31,16 @@ vector<game_round>* get_all_rounds()
 
 void write_to_file()
 {
-    if(!participant_id)
-    {
-        logoutf("No participant ID given. Log failed.");
-        return;
-    }
+    // overwrite possibly unset variables with -1; would be sizeof var otherwise
+    if(!this_round->completion_time) this_round->completion_time = -1;
+    if(!this_round->kills) this_round->kills = -1;
+    if(!this_round->deaths) this_round->deaths = -1;
+    if(!this_round->delay_max) this_round->delay_max = -1;
+    if(!this_round->delay_min) this_round->delay_min = -1;
+
     // write summary log file with all values but the events
     string filename;
-    formatstring(filename, "logs/p%i_r%i_sum.txt", participant_id, this_round->round_number);
+    formatstring(filename, "logs/%s_r%i_sum.txt", game::player1->name, this_round->round_number);
     logoutf("%i", this_round->round_number);
     logoutf(filename);
     setsummarylogfile(filename);
@@ -54,12 +51,13 @@ void write_to_file()
     summarylogoutf("delay_max:%i", this_round->delay_max);
 
     // log events to csv
-    formatstring(filename, "logs/p%i_r%i_events.csv", participant_id, this_round->round_number);
+    formatstring(filename, "logs/%s_r%i_events.csv", game::player1->name, this_round->round_number);
     seteventlogfile(filename);
     // write header
     eventlogoutf(
         "timestamp;event_name;input_type;input_value;delay;shot_hit"
     );
+    // write lines
     for(int i=0; i<this_round->events.length(); ++i)
     {
         round_event ev = this_round->events[i];
@@ -73,6 +71,9 @@ void write_to_file()
             ev.shot_hit
         );
     }
+
+    closeeventlogfile();
+    closesummarylogfile();
 }
 
 void closeeventlogfile()
@@ -111,8 +112,9 @@ void seteventlogfile(const char *fname)
     closeeventlogfile();
     if(fname && fname[0])
     {
-        fname = findfile(fname, "w");
-        if(fname) eventlogfile = fopen(fname, "w");
+        // x prevents overriding existing files and therefore previous logs by accident
+        fname = findfile(fname, "wx"); 
+        if(fname) eventlogfile = fopen(fname, "wx");
     }
     FILE *f = geteventlogfile();
     if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
@@ -128,8 +130,8 @@ void setsummarylogfile(const char *fname)
     closesummarylogfile();
     if(fname && fname[0])
     {
-        fname = findfile(fname, "w");
-        if(fname) summarylogfile = fopen(fname, "w");
+        fname = findfile(fname, "wx");
+        if(fname) summarylogfile = fopen(fname, "wx");
     }
     FILE *f = getsummarylogfile();
     if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
