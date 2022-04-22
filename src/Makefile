@@ -239,7 +239,7 @@ libenet: enet/libenet.a
 
 depend:
 	makedepend -Y -Ishared -Iengine -Ifpsgame $(CLIENT_OBJS:.o=.cpp)
-	makedepend -a -o.h.gch -Y -Ishared -Iengine $(CLIENT_PCH:.h.gch=.h)
+	makedepend -a -o.h.gch -Y -Ishared -Iengine -Ifpsgame $(CLIENT_PCH:.h.gch=.h)
 	makedepend -a -o-standalone.o -Y -DSTANDALONE -Ishared -Iengine -Ifpsgame $(SERVER_MASTER_OBJS:-standalone.o=.cpp)
 
 # DO NOT DELETE
