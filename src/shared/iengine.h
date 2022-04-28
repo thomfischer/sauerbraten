@@ -619,6 +619,12 @@ namespace study
         int maxvariance;
     };
 
+    struct participant
+    {
+        int id;
+        vector<condition> conditions;
+    };
+
     extern FILE *eventlogfile;
     extern FILE *summarylogfile;
     extern vector<game_round>* rounds;
@@ -629,6 +635,7 @@ namespace study
     extern void setfiles(string playername);
     extern void closesummarylogfile();
     extern void closeeventlogfile();
+    extern void load_condition();
     extern int setsummarylogfile(const char *fname);
     extern int seteventlogfile(const char *fname);
     extern void summarylogoutf(const char *fmt, ...);

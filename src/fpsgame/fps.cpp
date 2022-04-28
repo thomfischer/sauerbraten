@@ -559,6 +559,7 @@ namespace game
 
             study::write_to_file();
             study::reset_round_struct();
+            study::get_this_round()->round_number++;
         }
     }
 

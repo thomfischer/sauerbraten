@@ -2,14 +2,18 @@
 
 #define LOGSTRLEN 512
 
-
 namespace study
 {
 
+FILE* condition_config = NULL;
+const char* con_cfg_fname = "conditions.cfg";
 FILE* eventlogfile = NULL;
 FILE* summarylogfile = NULL;
 game_round* this_round = new game_round;
 vector<game_round>* rounds = new vector<game_round>;
+
+participant* this_participant = new participant;
+vector<participant>* participants = new vector<participant>;
 
 void reset_round_struct()
 {
@@ -40,6 +44,28 @@ void setfiles(string playername)
     if(seteventlogfile(filename) == 0)
     {
         conoutf(CON_ERROR, "\f3ERROR: file for this participant and round already exists!");
+    }
+}
+
+void load_conditions()
+{
+    string line;
+    stream* st = openutf8file(con_cfg_fname, "r");
+    while(st->getline(line, sizeof(line)))
+    {
+        if(line[0] == 'P')
+        {
+            participant p;;
+            p.id = (int) line[1];
+            participants->add(p);
+        }
+        else
+        {
+            participant p = participants->last();
+            int vals[4];
+            // TODO slice string. assign vals via slices. add p to vector.
+        }
+        
     }
 }
 
