@@ -6,7 +6,7 @@ namespace study
 {
 
 FILE* condition_config = NULL;
-const char* con_cfg_fname = "conditions.cfg";
+const char* con_cfg_fname = "conditions.txt";
 FILE* eventlogfile = NULL;
 FILE* summarylogfile = NULL;
 game_round* this_round = new game_round;
@@ -55,17 +55,18 @@ void load_conditions()
     {
         if(line[0] == 'P')
         {
-            participant p;;
-            p.id = (int) line[1];
-            participants->add(p);
+            participant p;
+            sscanf(line, "P%i", &p.id);
+            participants->put(p);
         }
         else
         {
-            participant p = participants->last();
-            int vals[4];
+            participant* p = &participants->last();
+            int roundnumber, basedelay, minvar, maxvar;
+            sscanf(line, "%i %i %i %i", &roundnumber, &basedelay, &minvar, &maxvar);
+            p->conditions.add( {roundnumber, basedelay, minvar, maxvar} );
             // TODO slice string. assign vals via slices. add p to vector.
         }
-        
     }
 }
 

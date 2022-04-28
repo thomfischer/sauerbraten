@@ -1420,7 +1420,7 @@ int main(int argc, char **argv)
     inputgrab(grabinput = true);
     ignoremousemotion();
 
-    study::load_condition(1);
+    study::load_conditions();
 
     for(;;)
     {

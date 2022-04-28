@@ -635,7 +635,7 @@ namespace study
     extern void setfiles(string playername);
     extern void closesummarylogfile();
     extern void closeeventlogfile();
-    extern void load_condition();
+    extern void load_conditions();
     extern int setsummarylogfile(const char *fname);
     extern int seteventlogfile(const char *fname);
     extern void summarylogoutf(const char *fmt, ...);
