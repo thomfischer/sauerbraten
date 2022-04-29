@@ -477,8 +477,6 @@ extern bool requestmaster(const char *req);
 extern bool requestmasterf(const char *fmt, ...) PRINTFARGS(1, 2);
 extern bool isdedicatedserver();
 extern void writelogv(FILE *file, const char *fmt, va_list args);
-extern void writelog(FILE *file, const char *buf);
-
 
 // client
 extern void sendclientpacket(ENetPacket *packet, int chan);
@@ -625,30 +623,10 @@ namespace study
         vector<condition> conditions;
     };
 
-    extern FILE *eventlogfile;
-    extern FILE *summarylogfile;
-    extern vector<game_round> rounds;
-    extern game_round* this_round;
-
-    extern FILE* getsummarylogfile();
-    extern FILE* geteventlogfile();
-    extern void setfiles(string playername);
-    extern void closesummarylogfile();
-    extern void closeeventlogfile();
-    extern void load_conditions_file();
-    extern void update_delaydaemon_FIFO(condition con);
-    extern condition get_condition(int roundnumber);
-    extern void load_participant(string playername);
-    extern int setsummarylogfile(const char *fname);
-    extern int seteventlogfile(const char *fname);
-    extern void summarylogoutf(const char *fmt, ...);
-    extern void summarylogoutfv(const char *fmt, va_list args);   
-    extern void eventlogoutf(const char *fmt, ...);
-    extern void eventlogoutfv(const char *fmt, va_list args);
-
     extern uint64_t epoch_time_ms();
     extern game_round* get_this_round();
     extern vector<game_round> get_all_rounds();
-    extern void write_to_file();
+    extern void write_log_to_file();
     extern void init();
+    extern void init_new_round(string playername);
 }
