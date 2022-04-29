@@ -477,6 +477,7 @@ extern bool requestmaster(const char *req);
 extern bool requestmasterf(const char *fmt, ...) PRINTFARGS(1, 2);
 extern bool isdedicatedserver();
 extern void writelogv(FILE *file, const char *fmt, va_list args);
+extern void writelog(FILE *file, const char *buf);
 
 
 // client
@@ -605,8 +606,8 @@ namespace study
         int round_number;
         int kills;
         int deaths;
-        int delay_min;
-        int delay_max;
+        int baselatency;
+        int maxlatency;
         long int round_start;
         long int round_end;
     };
@@ -615,8 +616,7 @@ namespace study
     {
         int roundnumber;
         int baselatency;
-        int minvariance;
-        int maxvariance;
+        int maxlatency;
     };
 
     struct participant
@@ -627,7 +627,7 @@ namespace study
 
     extern FILE *eventlogfile;
     extern FILE *summarylogfile;
-    extern vector<game_round>* rounds;
+    extern vector<game_round> rounds;
     extern game_round* this_round;
 
     extern FILE* getsummarylogfile();
@@ -635,7 +635,10 @@ namespace study
     extern void setfiles(string playername);
     extern void closesummarylogfile();
     extern void closeeventlogfile();
-    extern void load_conditions();
+    extern void load_conditions_file();
+    extern void update_delaydaemon_FIFO(condition con);
+    extern condition get_condition(int roundnumber);
+    extern void load_participant(string playername);
     extern int setsummarylogfile(const char *fname);
     extern int seteventlogfile(const char *fname);
     extern void summarylogoutf(const char *fmt, ...);
@@ -645,7 +648,7 @@ namespace study
 
     extern uint64_t epoch_time_ms();
     extern game_round* get_this_round();
-    extern vector<game_round>* get_all_rounds();
-    extern void reset_round_struct();
+    extern vector<game_round> get_all_rounds();
     extern void write_to_file();
+    extern void init();
 }

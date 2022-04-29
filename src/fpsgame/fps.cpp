@@ -558,7 +558,6 @@ namespace game
             study::get_this_round()->round_end = re.timestamp;
 
             study::write_to_file();
-            study::reset_round_struct();
             study::get_this_round()->round_number++;
         }
     }
@@ -695,6 +694,7 @@ namespace game
 
         // tf
         study::setfiles(player1->name);
+        study::load_participant(player1->name);
         //tflog event
         study::round_event re;
         re.timestamp = study::epoch_time_ms();

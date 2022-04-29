@@ -10,23 +10,17 @@ const char* con_cfg_fname = "conditions.txt";
 FILE* eventlogfile = NULL;
 FILE* summarylogfile = NULL;
 game_round* this_round = new game_round;
-vector<game_round>* rounds = new vector<game_round>;
+vector<game_round> rounds;
 
 participant* this_participant = new participant;
-vector<participant>* participants = new vector<participant>;
-
-void reset_round_struct()
-{
-    delete this_round;
-    this_round = new game_round;
-}
+vector<participant> participants;
 
 game_round* get_this_round()
 {
     return this_round;
 }
 
-vector<game_round>* get_all_rounds()
+vector<game_round> get_all_rounds()
 {
     return rounds;
 }
@@ -47,7 +41,53 @@ void setfiles(string playername)
     }
 }
 
-void load_conditions()
+// playername = P1, P2, etc.
+void load_participant(string playername)
+{
+    int playernum;
+    sscanf(playername, "P%i", &playernum);
+    if(playernum > participants.length())
+    {
+        conoutf(CON_ERROR, "\f3ERROR: Participant ID higher than allowed!");
+    }
+    loopv(participants)
+    {
+        if(participants[i].id == playernum) this_participant = &participants[i];
+        return;
+    }
+
+    conoutf(CON_ERROR, "\f3ERROR: Participant ID not found!");
+}
+
+void update_delaydaemon_FIFO(condition con)
+{
+    const char* fname = findfile("delaydaemon", "w+");
+    FILE* f;
+    if(fname) f = fopen(fname, "w+");
+    if(f == 0) return;
+
+    string buf;
+    sprintf(buf, "%i %i %i %i", con.baselatency, con.maxlatency, 0, 0);
+    writelog(f, buf);
+}
+
+condition get_condition(int roundnumber)
+{
+    return this_participant->conditions[roundnumber];
+}
+
+void init_new_round(int roundnumber)
+{
+    delete this_round;
+    this_round = new game_round;
+    condition con = get_condition(roundnumber);
+    update_delaydaemon_FIFO(con);
+    this_round->baselatency = con.baselatency;
+    this_round->maxlatency = con.maxlatency;
+
+}
+
+void load_conditions_file()
 {
     string line;
     stream* st = openutf8file(con_cfg_fname, "r");
@@ -57,15 +97,14 @@ void load_conditions()
         {
             participant p;
             sscanf(line, "P%i", &p.id);
-            participants->put(p);
+            participants.add(p);
         }
         else
         {
-            participant* p = &participants->last();
-            int roundnumber, basedelay, minvar, maxvar;
-            sscanf(line, "%i %i %i %i", &roundnumber, &basedelay, &minvar, &maxvar);
-            p->conditions.add( {roundnumber, basedelay, minvar, maxvar} );
-            // TODO slice string. assign vals via slices. add p to vector.
+            participant* p = &participants.last();
+            int roundnumber, basedelay, maxdelay;
+            sscanf(line, "%i %i %i", &roundnumber, &basedelay, &maxdelay);
+            p->conditions.add( {roundnumber, basedelay, maxdelay} );
         }
     }
 }
@@ -77,16 +116,16 @@ void write_to_file()
     if(!this_round->round_end) this_round->round_end = -1;
     if(!this_round->kills) this_round->kills = -1;
     if(!this_round->deaths) this_round->deaths = -1;
-    if(!this_round->delay_max) this_round->delay_max = -1;
-    if(!this_round->delay_min) this_round->delay_min = -1;
+    if(!this_round->baselatency) this_round->baselatency = -1;
+    if(!this_round->maxlatency) this_round->maxlatency = -1;
 
     // write summary log file with all values but the events
     summarylogoutf("round_start:%li", this_round->round_start);
     summarylogoutf("round_end:%li", this_round->round_end);
     summarylogoutf("deaths:%i", this_round->deaths);
     summarylogoutf("kills:%i", this_round->kills);
-    summarylogoutf("delay_min:%i", this_round->delay_min);
-    summarylogoutf("delay_max:%i", this_round->delay_max);
+    summarylogoutf("delay_min:%i", this_round->baselatency);
+    summarylogoutf("delay_max:%i", this_round->maxlatency);
 
     // log events to csv
     // write header
@@ -114,7 +153,6 @@ void write_to_file()
             ev.shot_hit
         );
     }
-    logoutf("finito");
 
     closeeventlogfile();
     closesummarylogfile();
@@ -158,9 +196,8 @@ int seteventlogfile(const char *fname)
     {
         // x prevents overriding existing files and therefore previous logs by accident
         fname = findfile(fname, "wx"); 
-        conoutf(fname);
         if(fname) eventlogfile = fopen(fname, "wx");
-        if(summarylogfile == 0) return 0;
+        if(eventlogfile == 0) return 0;
     }
     FILE *f = geteventlogfile();
     if(f) setvbuf(f, NULL, _IOLBF, BUFSIZ);
@@ -212,6 +249,19 @@ void eventlogoutfv(const char *fmt, va_list args)
 {
     FILE *f = geteventlogfile();
     if(f) writelogv(f, fmt, args);
+}
+
+void new_participant(string name)
+{
+    setfiles(name);
+    load_participant(name);
+    init_new_round(3);
+}
+
+void init()
+{
+    load_conditions_file();
+    new_participant("P0");
 }
 
 }
