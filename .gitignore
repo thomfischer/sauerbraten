@@ -34,10 +34,10 @@
 # Sauerbraten root
 bin_unix/
 data/
+!data/menus.cfg
 docs/
 packages/
 README.html
-server-init.cfg
 sauerbraten_unix
 
 # Sauerbraten src
