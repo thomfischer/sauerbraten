@@ -33,7 +33,7 @@
 
 # Sauerbraten root
 bin_unix/
-data/
+data/*
 !data/menus.cfg
 docs/
 packages/
