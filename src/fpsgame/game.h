@@ -89,7 +89,8 @@ enum
     M_DMSP       = 1<<16,
     M_CLASSICSP  = 1<<17,
     M_SLOWMO     = 1<<18,
-    M_COLLECT    = 1<<19
+    M_COLLECT    = 1<<19,
+    M_RIFLEONLY  = 1<<20
 };
 
 static struct gamemodeinfo
@@ -124,7 +125,8 @@ static struct gamemodeinfo
     { "effic hold", M_NOITEMS | M_EFFICIENCY | M_CTF | M_HOLD | M_TEAM, "Efficiency Hold The Flag: Hold \fs\f7the flag\fr for 20 seconds to score points for \fs\f1your team\fr. You spawn with all weapons and armour. There are no items." },
     { "collect", M_COLLECT | M_TEAM, "Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. Collect items for ammo." },
     { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Instagib Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
-    { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM, "Efficiency Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with all weapons and armour. There are no items." }
+    { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM, "Efficiency Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with all weapons and armour. There are no items." },
+    { "study", M_NOITEMS | M_RIFLEONLY, "No items, rifle only, complex." }
 };
 
 #define STARTGAMEMODE (-3)
@@ -162,6 +164,8 @@ static struct gamemodeinfo
 #define m_sp           (m_check(gamemode, M_DMSP | M_CLASSICSP))
 #define m_dmsp         (m_check(gamemode, M_DMSP))
 #define m_classicsp    (m_check(gamemode, M_CLASSICSP))
+
+#define m_rifleonly    (m_check(gamemode, M_RIFLEONLY))
 
 enum { MM_AUTH = -1, MM_OPEN = 0, MM_VETO, MM_LOCKED, MM_PRIVATE, MM_PASSWORD, MM_START = MM_AUTH };
 
@@ -508,6 +512,14 @@ struct fpsstate
             }
             ammo[GUN_PISTOL] = 80;
             ammo[GUN_GL] = 1;
+        }
+        //tf
+        else if(m_rifleonly)
+        {
+            armour = 0;
+            health = 100;
+            gunselect = GUN_RIFLE;
+            ammo[GUN_RIFLE] = 999;
         }
         else
         {
