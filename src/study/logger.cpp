@@ -44,18 +44,20 @@ void load_participant(string playername)
 // update the file used by the DelayDaemon to change latency
 void update_delaydaemon_FIFO(condition con)
 {
-    const char* fname = findfile("delaydaemonmouse", "w+");
-    const char* fname2 = findfile("delaydaemonkeyboard", "w+");
-    FILE *f, *f2;
-    if(fname) f = fopen(fname, "w+");
-    if(fname2) f2 = fopen(fname2, "w+");
-    if(f == 0 || f2 == 0) return;
-
     string buf;
     sprintf(buf, "%i %i %i %i", con.baselatency, con.maxlatency, 0, 0);
+    FILE *f, *f2;
+
+    const char* fname = findfile("delaydaemonmouse", "w+");
+    if(fname) f = fopen(fname, "w+");
+    if(f == 0) return;
     study::logoutf(f, buf);
-    study::logoutf(f2, buf);
     fclose(f);
+
+    const char* fname2 = findfile("delaydaemonkeyboard", "w+");
+    if(fname2) f2 = fopen(fname2, "w+");
+    if(f2 == 0) return;
+    study::logoutf(f2, buf);
     fclose(f2);
 }
 
