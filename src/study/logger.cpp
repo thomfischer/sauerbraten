@@ -52,6 +52,7 @@ void update_delaydaemon_FIFO(condition con)
     string buf;
     sprintf(buf, "%i %i %i %i", con.baselatency, con.maxlatency, 0, 0);
     study::logoutf(f, buf);
+    fclose(f);
 }
 
 condition load_condition()
