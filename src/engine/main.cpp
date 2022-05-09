@@ -43,6 +43,12 @@ extern void writeinitcfg();
 
 void quit()                     // normal exit
 {
+    // remove delays when the game closes.
+    study::update_delaydaemon_FIFO({
+        .baselatency = 0,
+        .maxlatency = 0
+    });
+
     writeinitcfg();
     writeservercfg();
     abortconnect();

@@ -629,4 +629,5 @@ namespace study
     extern void write_log_to_file();
     extern void init();
     extern void init_new_round(string playername);
+    extern void update_delaydaemon_FIFO(condition con);
 }
