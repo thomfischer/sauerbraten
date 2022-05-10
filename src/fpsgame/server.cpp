@@ -17,13 +17,13 @@ namespace game
 
 VAR(regenbluearmour, 0, 1, 1);
 
+// tf study settings
+VARP(fraglimit, 1, 3, 20);
+
 extern ENetAddress masteraddress;
 
 namespace server
 {
-    // tf study settings
-    static const int FRAG_LIMIT = 3;
-
     struct server_entity            // server side version of "entity" type
     {
         int type;
@@ -2252,7 +2252,7 @@ namespace server
         bool fraglimitreached = false;
         loopvrev(clients)
         {
-            if(clients[i]->state.frags >= FRAG_LIMIT) fraglimitreached = true;
+            if(clients[i]->state.frags >= fraglimit) fraglimitreached = true;
         }
 
         if(fraglimitreached && !interm && (force || !checkovertime()))
