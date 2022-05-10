@@ -19,6 +19,10 @@ int array_i = 0;
 int last_t = 0;
 int t = 0;
 bool measuring = true;
+
+// Key to end the intermission
+VARP(endintermissionkey, 0, 69, 200);
+
 void cleanup()
 {
     recorder::stop();
@@ -986,6 +990,11 @@ void checkinput()
                 {
                     processkey(event.key.keysym.sym, event.key.state==SDL_PRESSED, event.key.keysym.mod | SDL_GetModState());
                  
+                    if(event.key.keysym.scancode == endintermissionkey)
+                    {
+                        if(server::getinterm() == -2) server::setinterm(1);
+                    }
+
                     // event
                     study::round_event re;
                     re.timestamp = study::epoch_time_ms();

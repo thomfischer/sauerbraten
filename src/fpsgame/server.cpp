@@ -401,6 +401,9 @@ namespace server
     vector<uint> allowedips;
     vector<ban> bannedips;
 
+    void setinterm(int i) { interm = gamemillis + i; }
+    int getinterm() { return interm; }
+
     void addban(uint ip, int expire)
     {
         allowedips.removeobj(ip);
@@ -2261,7 +2264,8 @@ namespace server
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
             changegamespeed(100);
-            interm = gamemillis + 10000;
+            // interm = gamemillis + 10000;
+            interm = -2;
         }
     }
 

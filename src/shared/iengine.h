@@ -631,3 +631,9 @@ namespace study
     extern void init_new_round(string playername);
     extern void update_delaydaemon_FIFO(condition con);
 }
+
+namespace server
+{
+    extern void setinterm(int i);
+    extern int getinterm();
+}
