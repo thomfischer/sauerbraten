@@ -90,7 +90,8 @@ enum
     M_CLASSICSP  = 1<<17,
     M_SLOWMO     = 1<<18,
     M_COLLECT    = 1<<19,
-    M_RIFLEONLY  = 1<<20
+    M_RIFLEONLY  = 1<<20,
+    M_PISTOLONLY = 1<<21
 };
 
 static struct gamemodeinfo
@@ -126,7 +127,8 @@ static struct gamemodeinfo
     { "collect", M_COLLECT | M_TEAM, "Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. Collect items for ammo." },
     { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Instagib Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
     { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM, "Efficiency Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with all weapons and armour. There are no items." },
-    { "study", M_NOITEMS | M_RIFLEONLY, "No items, rifle only, complex." }
+    { "study_pistol", M_NOITEMS | M_PISTOLONLY, "No items, pistol only, teahupoo." },
+    { "study_rifle", M_NOITEMS | M_RIFLEONLY, "No items, rifle only, teahupoo." },
 };
 
 #define STARTGAMEMODE (-3)
@@ -166,6 +168,7 @@ static struct gamemodeinfo
 #define m_classicsp    (m_check(gamemode, M_CLASSICSP))
 
 #define m_rifleonly    (m_check(gamemode, M_RIFLEONLY))
+#define m_pistolonly    (m_check(gamemode, M_PISTOLONLY))
 
 enum { MM_AUTH = -1, MM_OPEN = 0, MM_VETO, MM_LOCKED, MM_PRIVATE, MM_PASSWORD, MM_START = MM_AUTH };
 
@@ -520,6 +523,13 @@ struct fpsstate
             health = 100;
             gunselect = GUN_RIFLE;
             ammo[GUN_RIFLE] = 999;
+        }
+        else if(m_pistolonly)
+        {
+            armour = 0;
+            health = 100;
+            gunselect = GUN_PISTOL;
+            ammo[GUN_PISTOL] = 999;
         }
         else
         {
