@@ -551,6 +551,9 @@ namespace game
             study::get_this_round()->events.add(re);
             study::get_this_round()->round_end = re.timestamp;
 
+            study::get_this_round()->kills = player1->frags;
+            study::get_this_round()->deaths = player1->deaths;
+
             study::write_log_to_file();
         }
     }

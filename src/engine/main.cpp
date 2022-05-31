@@ -994,13 +994,6 @@ void checkinput()
                     {
                         if(server::getinterm() == -2) server::setinterm(1);
                     }
-
-                    // event
-                    study::round_event re;
-                    re.timestamp = study::epoch_time_ms();
-                    re.input_type = strdup("keyup");
-                    re.input_value = strdup(SDL_GetKeyName(event.key.keysym.sym));
-                    study::get_this_round()->events.add(re);
                 }
                 break;
 
@@ -1094,13 +1087,6 @@ void checkinput()
                         button_name = strdup("mouse_error");
                         break;
                 }
-
-                // event
-                study::round_event re;
-                re.timestamp = study::epoch_time_ms();
-                re.input_type = strdup("mouseup");
-                re.input_value = button_name;
-                study::get_this_round()->events.add(re);
 
                 break;
 
