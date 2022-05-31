@@ -2397,11 +2397,13 @@ namespace server
             {
                 #ifndef STANDALONE
                 //tflog
-                // not sure why this only triggers on player shots
                 study::round_event ev;
-                ev.timestamp = study::epoch_time_ms();
-                ev.event_name = strdup("shot fired");
-                ev.shot_hit = false;
+                if(!gs.aitype)
+                {
+                    ev.timestamp = study::epoch_time_ms();
+                    ev.event_name = strdup("shot fired");
+                    ev.shot_hit = false;
+                }
                 #endif
 
                 int totalrays = 0, maxrays = guns[gun].rays;
@@ -2418,14 +2420,14 @@ namespace server
 
                     #ifndef STANDALONE
                     // tf
-                    ev.shot_hit = true;
+                    if(!gs.aitype) ev.shot_hit = true;
                     #endif
 
                     dodamage(target, ci, damage, gun, h.dir);
                 }
                 #ifndef STANDALONE
                 // tf
-                study::get_this_round()->events.add(ev);
+                if(!gs.aitype) study::get_this_round()->events.add(ev);
                 #endif
 
                 break;

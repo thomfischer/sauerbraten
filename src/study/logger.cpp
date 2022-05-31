@@ -107,12 +107,12 @@ void closelogfiles()
 void write_log_to_file()
 {
     // overwrite possibly unset variables with -1; would be sizeof var otherwise
-    if(!this_round->round_start)    this_round->round_start = -1;
-    if(!this_round->round_end)      this_round->round_end = -1;
-    if(!this_round->kills)          this_round->kills = -1;
-    if(!this_round->deaths)         this_round->deaths = -1;
-    if(!this_round->baselatency)    this_round->baselatency = -1;
-    if(!this_round->maxlatency)     this_round->maxlatency = -1;
+    if(this_round->round_start < 0)    this_round->round_start = -1;
+    if(this_round->round_end < 0)      this_round->round_end = -1;
+    if(this_round->kills < 0)          this_round->kills = -1;
+    if(this_round->deaths < 0)         this_round->deaths = -1;
+    if(this_round->baselatency < 0)    this_round->baselatency = -1;
+    if(this_round->maxlatency < 0)     this_round->maxlatency = -1;
 
     // write summary log file with all values but the events
     study::logoutf(summarylogfile,  "round_start:%li",   this_round->round_start);

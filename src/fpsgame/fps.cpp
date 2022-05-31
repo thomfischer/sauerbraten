@@ -401,12 +401,6 @@ namespace game
         if(local) damage = d->dodamage(damage);
         else if(actor==player1)
         {
-            //tflog event
-            study::round_event re;
-            re.timestamp = study::epoch_time_ms();
-            re.event_name = strdup("shot hit");
-            study::get_this_round()->events.add(re);
-
             // part of the vanilla code
             return;
         }
