@@ -207,6 +207,9 @@ void init_new_round(string playername)
     setfiles(playername);
 }
 
+void set_can_shoot(bool b) { can_shoot = b; }
+bool get_can_shoot() { return can_shoot; }
+
 void init()
 {
     load_conditions_file();

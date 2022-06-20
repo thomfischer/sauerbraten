@@ -564,6 +564,9 @@ void processkey(int code, bool isdown, int modstate)
             if(haskey) execbind(*haskey, isdown);
         }
     }
+
+    //tf
+    if(code == -1 && isdown) study::set_can_shoot(true);
 }
 
 void clear_console()

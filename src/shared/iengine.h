@@ -582,7 +582,6 @@ extern void g3d_cursorpos(float &x, float &y);
 extern void g3d_resetcursor();
 extern void g3d_limitscale(float scale);
 
-
 // tf study
 namespace study
 {
@@ -630,6 +629,8 @@ namespace study
     extern void init();
     extern void init_new_round(string playername);
     extern void update_delaydaemon_FIFO(condition con);
+    extern void set_can_shoot(bool b);
+    extern bool get_can_shoot();
 }
 
 namespace server

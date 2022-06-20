@@ -9,6 +9,7 @@ namespace study
 // private
 const char* con_cfg_fname = "conditions.txt";
 int roundnumber = -1;   // first round start will increment it to 0
+bool can_shoot = true;  // related functions exist to prevent automatic fire on holding LMB
 
 FILE* condition_config = NULL;
 FILE* eventlogfile = NULL;

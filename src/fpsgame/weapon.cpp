@@ -773,12 +773,17 @@ namespace game
 
     void shoot(fpsent *d, const vec &targ)
     {
+        //tf
+        if(!study::get_can_shoot()) return;
+        study::set_can_shoot(false);
+
         int prevaction = d->lastaction, attacktime = lastmillis-prevaction;
         if(attacktime<d->gunwait) return;
         d->gunwait = 0;
         if((d==player1 || d->ai) && !d->attacking) return;
         d->lastaction = lastmillis;
         d->lastattackgun = d->gunselect;
+
         if(!d->ammo[d->gunselect])
         {
             if(d==player1)
@@ -824,6 +829,8 @@ namespace game
 		d->gunwait = guns[d->gunselect].attackdelay;
 		if(d->gunselect == GUN_PISTOL && d->ai) d->gunwait += int(d->gunwait*(((101-d->skill)+rnd(111-d->skill))/100.f));
         d->totalshots += guns[d->gunselect].damage*(d->quadmillis ? 4 : 1)*guns[d->gunselect].rays;
+
+        //tf
     }
 
     void adddynlights()
