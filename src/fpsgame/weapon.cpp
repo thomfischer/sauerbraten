@@ -774,7 +774,7 @@ namespace game
     void shoot(fpsent *d, const vec &targ)
     {
         //tf
-        if(!study::get_can_shoot()) return;
+        if(!study::get_can_shoot() && d==player1) return;
         study::set_can_shoot(false);
 
         int prevaction = d->lastaction, attacktime = lastmillis-prevaction;
