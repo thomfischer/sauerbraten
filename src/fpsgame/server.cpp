@@ -20,6 +20,8 @@ VAR(regenbluearmour, 0, 1, 1);
 // tf study settings
 VARP(fraglimit, 1, 3, 20);
 
+VARP(round_time, 1, 10, 10);
+
 extern ENetAddress masteraddress;
 
 namespace server
@@ -2047,7 +2049,7 @@ namespace server
 
         gamemode = mode;
         gamemillis = 0;
-        gamelimit = 10*60000;
+        gamelimit = round_time * 60000;
         interm = 0;
         nextexceeded = 0;
         copystring(smapname, s);
@@ -2252,14 +2254,15 @@ namespace server
 
     void checkintermission(bool force = false)
     {
-        bool fraglimitreached = false;
-        loopvrev(clients)
-        {
-            if(clients[i]->state.frags >= fraglimit) fraglimitreached = true;
-        }
+        // tf
+        // bool fraglimitreached = false;
+        // loopvrev(clients)
+        // {
+        //     if(clients[i]->state.frags >= fraglimit) fraglimitreached = true;
+        // }
 
-        if(fraglimitreached && !interm && (force || !checkovertime()))
-        // if(gamemillis >= gamelimit && !interm && (force || !checkovertime()))
+        // if(fraglimitreached && !interm && (force || !checkovertime()))
+        if(gamemillis >= gamelimit && !interm && (force || !checkovertime()))
         {
             sendf(-1, 1, "ri2", N_TIMEUP, 0);
             if(smode) smode->intermission();
