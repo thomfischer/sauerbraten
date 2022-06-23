@@ -34,8 +34,11 @@ void load_participant(string playername)
     }
     loopv(participants)
     {
-        if(participants[i].id == playernum) this_participant = &participants[i];
+        if(participants[i].id == playernum)
+        {
+            this_participant = &participants[i];
         return;
+        }
     }
 
     conoutf(CON_ERROR, "\f3ERROR: Participant ID not found!");
