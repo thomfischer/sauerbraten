@@ -27,7 +27,7 @@ void load_participant(string playername)
 {
     delete this_participant;
     int playernum;
-    sscanf(playername, "P%i", &playernum);
+    sscanf(playername, "%i", &playernum);
     if(playernum > participants.length())
     {
         conoutf(CON_ERROR, "\f3ERROR: Participant ID higher than allowed!");
