@@ -2404,8 +2404,7 @@ namespace server
                 if(!gs.aitype)
                 {
                     ev.timestamp = study::epoch_time_ms();
-                    ev.event_name = strdup("shot fired");
-                    ev.shot_hit = false;
+                    ev.event_name = strdup("shot missed");
                 }
                 #endif
 
@@ -2423,7 +2422,7 @@ namespace server
 
                     #ifndef STANDALONE
                     // tf
-                    if(!gs.aitype) ev.shot_hit = true;
+                    if(!gs.aitype) ev.event_name = strdup("shot hit");
                     #endif
 
                     dodamage(target, ci, damage, gun, h.dir);

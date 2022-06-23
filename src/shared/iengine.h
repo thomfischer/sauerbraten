@@ -588,13 +588,7 @@ namespace study
     struct round_event
     {
         long int timestamp;
-        // input events
-        char* input_type;     // MouseUp, KeyDown, etc
-        char* input_value;    // KEY_W, LMB
-        int delay_this;
-        // game events
         char* event_name;
-        bool shot_hit;             // 1=hit, 0=miss, NULL=no shot
     };
 
     struct game_round

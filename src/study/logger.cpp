@@ -22,6 +22,20 @@ void logoutf(FILE* f, const char *fmt, ...)
     va_end(args);
 }
 
+void old_logoutfv(const char *fmt, va_list args)
+{
+    FILE *f = getlogfile();
+    if(f) writelogv(f, fmt, args);
+}
+
+void old_logoutf(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    old_logoutfv(fmt, args);
+    va_end(args);
+}
+
 // playername = P1, P2, etc.
 void load_participant(string playername)
 {
@@ -37,7 +51,7 @@ void load_participant(string playername)
         if(participants[i].id == playernum)
         {
             this_participant = &participants[i];
-        return;
+            return;
         }
     }
 
@@ -129,28 +143,18 @@ void write_log_to_file()
     // write header
     study::logoutf(
         eventlogfile,
-        "timestamp;event_name;input_type;input_value;delay;shot_hit"
+        "timestamp;event_name"
     );
     // write lines
     for(int i=0; i<this_round->events.length(); ++i)
     {
         round_event ev = this_round->events[i];
 
-        // drop all inputs made before or after rounds (e.g. in menus)
-        if(ev.input_value
-        && (ev.timestamp > this_round->round_end
-            || ev.timestamp < this_round->round_start))
-        { continue; }
-
         study::logoutf(
             eventlogfile,
-            "%li;%s;%s;%s;%i;%i",
+            "%li;%s",
             ev.timestamp,
-            ev.event_name,
-            ev.input_type,
-            ev.input_value,
-            ev.delay_this,
-            ev.shot_hit
+            ev.event_name
         );
     }
 
