@@ -585,6 +585,13 @@ namespace game
     }
     ICOMMAND(map, "s", (char *name), changemap(name));
 
+    void changeround(int number, const char *name)
+    {
+        study::set_roundnumber(number);
+        changemap(name, m_valid(nextmode) ? nextmode : (remote ? 0 : 1));
+    }
+    ICOMMAND(changeround, "i", (int *number), changeround(*number, "teahupoo"));
+
     void forceintermission()
     {
         if(!remote && !hasnonlocalclients()) server::startintermission();

@@ -29,6 +29,7 @@ condition load_condition();
 void load_conditions_file();
 void closelogfiles();
 void setfiles(string participant);
+void getroundnumber();
 
 };
 

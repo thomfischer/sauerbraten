@@ -625,6 +625,7 @@ namespace study
     extern void update_delaydaemon_FIFO(condition con);
     extern void set_can_shoot(bool b);
     extern bool get_can_shoot();
+    extern void set_roundnumber(int number);
 }
 
 namespace server

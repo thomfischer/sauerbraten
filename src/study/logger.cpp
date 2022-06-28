@@ -36,6 +36,19 @@ void old_logoutf(const char *fmt, ...)
     va_end(args);
 }
 
+void get_roundnumber()
+{
+    conoutf("roundnumber: %i", roundnumber);
+}
+COMMAND(get_roundnumber, "");
+
+void set_roundnumber(int number) 
+{ 
+    // init_new_round() increments by 1, so we decrement by 1 here to get the number that was passed
+    roundnumber = number -1; 
+}
+ICOMMAND(roundnumber, "i", (int *number), set_roundnumber(*number));
+
 // playername = P1, P2, etc.
 void load_participant(string playername)
 {
@@ -200,14 +213,20 @@ void setfiles(string participant)
 
 void init_new_round(string playername)
 {
-    roundnumber++;
+    if(roundnumber < 0) roundnumber = 0;
+    else roundnumber++;
+
+    old_logoutf("init new round with number: %i", roundnumber);
+    old_logoutf("incremented to: %i", roundnumber);
 
     // if it's the first (0) round, load a new participant
     if(roundnumber == 0) load_participant(playername);
 
     delete this_round;
     this_round = new game_round;
+    old_logoutf("loading condition");
     condition con = load_condition();
+    old_logoutf("condition loaded");
     this_round->baselatency = con.baselatency;
     this_round->maxlatency = con.maxlatency;
 
