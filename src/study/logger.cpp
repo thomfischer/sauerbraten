@@ -75,7 +75,7 @@ void load_participant(string playername)
 void update_delaydaemon_FIFO(condition con)
 {
     string buf;
-    sprintf(buf, "%i %i %i %i", con.baselatency, con.maxlatency, 0, 0);
+    sprintf(buf, "%i %i %i %i", con.baselatency, con.maxlatency, con.baselatency, con.maxlatency);
     FILE *f, *f2;
 
     const char* fname = findfile("delaydaemonmouse", "w+");
