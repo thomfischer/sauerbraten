@@ -30,6 +30,7 @@ void load_conditions_file();
 void closelogfiles();
 void setfiles(string participant);
 void getroundnumber();
+bool prev_round_files_valid(int roundnumber);
 
 };
 

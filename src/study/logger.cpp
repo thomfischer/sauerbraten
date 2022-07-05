@@ -211,26 +211,58 @@ void setfiles(string participant)
     }
 }
 
+bool prev_round_files_valid(int roundnumber)
+{
+    int prev_round = roundnumber -1;
+    if(roundnumber < 0) return true;
+    
+    string sumfilename, evfilename;
+    formatstring(sumfilename, "logs/p%i_r%i_sum.txt", this_participant->id, prev_round);
+    formatstring(evfilename, "logs/p%i_r%i_log.csv", this_participant->id, prev_round);
+
+    string line;
+    stream* st = openutf8file(sumfilename, "r");
+    if(st->getline(line, sizeof(line)) != 1) 
+    {
+        st->close();
+        return false;
+    }
+    st->close();
+
+    st = openutf8file(evfilename, "r");
+    if(st->getline(line, sizeof(line)) != 1) 
+    {
+        st->close();
+        return false;
+    }
+    st->close();
+
+    return true;
+}
+
 void init_new_round(string playername)
 {
     if(roundnumber < 0) roundnumber = 0;
     else roundnumber++;
 
-    old_logoutf("init new round with number: %i", roundnumber);
-    old_logoutf("incremented to: %i", roundnumber);
-
     // if it's the first (0) round, load a new participant
     if(roundnumber == 0) load_participant(playername);
+    else
+    {
+        if(!prev_round_files_valid(roundnumber))
+        {
+            conoutf(CON_ERROR, "\f3ERROR: Files for previous round invalid!");
+        }
+    }
 
     delete this_round;
     this_round = new game_round;
-    old_logoutf("loading condition");
     condition con = load_condition();
-    old_logoutf("condition loaded");
     this_round->baselatency = con.baselatency;
     this_round->maxlatency = con.maxlatency;
 
     setfiles(playername);
+    conoutf(CON_INFO, "Starting round %i", roundnumber);
 }
 
 void set_can_shoot(bool b) { can_shoot = b; }
