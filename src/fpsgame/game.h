@@ -127,8 +127,8 @@ static struct gamemodeinfo
     { "collect", M_COLLECT | M_TEAM, "Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. Collect items for ammo." },
     { "insta collect", M_NOITEMS | M_INSTA | M_COLLECT | M_TEAM, "Instagib Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with full rifle ammo and die instantly from one shot. There are no items." },
     { "effic collect", M_NOITEMS | M_EFFICIENCY | M_COLLECT | M_TEAM, "Efficiency Skull Collector: Frag \fs\f3the enemy team\fr to drop \fs\f3skulls\fr. Collect them and bring them to \fs\f3the enemy base\fr to score points for \fs\f1your team\fr or steal back \fs\f1your skulls\fr. You spawn with all weapons and armour. There are no items." },
-    { "study_pistol", M_NOITEMS | M_PISTOLONLY, "No items, pistol only, teahupoo." },
-    { "study_rifle", M_NOITEMS | M_RIFLEONLY, "No items, rifle only, teahupoo." },
+    { "study_pistol", M_NOITEMS | M_PISTOLONLY, "Study." },
+    { "study_rifle", M_NOITEMS | M_RIFLEONLY, "Study." },
 };
 
 #define STARTGAMEMODE (-3)

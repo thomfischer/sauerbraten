@@ -498,22 +498,22 @@ namespace game
             dname = colorname(d, NULL, "", "", "you");
             aname = colorname(actor, NULL, "", "", "you");
         }
-        if(actor->type==ENT_AI)
-            conoutf(contype, "\f2%s got killed by %s!", dname, aname);
-        else if(d==actor || actor->type==ENT_INANIMATE)
-            conoutf(contype, "\f2%s suicided%s", dname, d==player1 ? "!" : "");
-        else if(isteam(d->team, actor->team))
-        {
-            contype |= CON_TEAMKILL;
-            if(actor==player1) conoutf(contype, "\f6%s fragged a teammate (%s)", aname, dname);
-            else if(d==player1) conoutf(contype, "\f6%s got fragged by a teammate (%s)", dname, aname);
-            else conoutf(contype, "\f2%s fragged a teammate (%s)", aname, dname);
-        }
-        else
-        {
-            if(d==player1) conoutf(contype, "\f2%s got fragged by %s", dname, aname);
-            else conoutf(contype, "\f2%s fragged %s", aname, dname);
-        }
+        // if(actor->type==ENT_AI)
+        //     conoutf(contype, "\f2%s got killed by %s!", dname, aname);
+        // else if(d==actor || actor->type==ENT_INANIMATE)
+        //     conoutf(contype, "\f2%s suicided%s", dname, d==player1 ? "!" : "");
+        // else if(isteam(d->team, actor->team))
+        // {
+        //     contype |= CON_TEAMKILL;
+        //     if(actor==player1) conoutf(contype, "\f6%s fragged a teammate (%s)", aname, dname);
+        //     // else if(d==player1) conoutf(contype, "\f6%s got fragged by a teammate (%s)", dname, aname);
+        //     else conoutf(contype, "\f2%s fragged a teammate (%s)", aname, dname);
+        // }
+        // else
+        // {
+        //     if(d==player1) conoutf(contype, "\f2%s got fragged by %s", dname, aname);
+        //     else conoutf(contype, "\f2%s fragged %s", aname, dname);
+        // }
         deathstate(d);
 		ai::killed(d, actor);
     }
@@ -665,7 +665,7 @@ namespace game
             cmode->setup();
         }
 
-        conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
+        // conoutf(CON_GAMEINFO, "\f2game mode is %s", server::modename(gamemode));
 
         if(m_sp)
         {
