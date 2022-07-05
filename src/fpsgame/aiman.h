@@ -119,7 +119,8 @@ namespace aiman
 		copystring(ci->name, "bot", MAXNAMELEN+1);
 		ci->state.state = CS_DEAD;
         copystring(ci->team, team, MAXTEAMLEN+1);
-        ci->playermodel = rnd(128);
+        // ci->playermodel = rnd(128);
+        ci->playermodel = 1;
 		ci->aireinit = 2;
 		ci->connected = true;
         dorefresh = true;
