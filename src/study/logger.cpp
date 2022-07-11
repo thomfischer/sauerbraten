@@ -270,7 +270,9 @@ void init_new_round(string playername)
     if(roundnumber >= this_participant->conditions.length()) // condition len start at 1, roundnumber at 0
     {
         goodbye_msg();
+        #ifndef STANDALONE
         quit();
+        #endif
     }
 
     delete this_round;
