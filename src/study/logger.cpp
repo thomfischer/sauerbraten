@@ -240,6 +240,17 @@ bool prev_round_files_valid(int roundnumber)
     return true;
 }
 
+void goodbye_msg()
+{
+    old_logoutf("######################");
+    old_logoutf("##    Thank you     ##");
+    old_logoutf("##        for       ##");
+    old_logoutf("##   participating  ##");
+    old_logoutf("######################");
+}
+
+VARP(conditionlen, 0, 7, 30);
+
 void init_new_round(string playername)
 {
     if(roundnumber < 0) roundnumber = 0;
@@ -253,6 +264,13 @@ void init_new_round(string playername)
         {
             conoutf(CON_ERROR, "\f3ERROR: Files for previous round invalid!");
         }
+    }
+
+    // quit the game after we have finished all conditions
+    if(roundnumber >= this_participant->conditions.length()) // condition len start at 1, roundnumber at 0
+    {
+        goodbye_msg();
+        quit();
     }
 
     delete this_round;
