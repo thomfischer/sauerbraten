@@ -2404,6 +2404,7 @@ namespace server
                 if(!gs.aitype)
                 {
                     ev.timestamp = study::epoch_time_ms();
+                    ev.distance = gs.o.dist(ci->bots[0]->state.o);
                     ev.event_name = strdup("shot missed");
                 }
                 #endif

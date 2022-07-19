@@ -592,6 +592,7 @@ namespace study
     {
         long int timestamp;
         char* event_name;
+        float distance;
     };
 
     struct game_round

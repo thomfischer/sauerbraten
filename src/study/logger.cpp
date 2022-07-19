@@ -156,7 +156,7 @@ void write_log_to_file()
     // write header
     study::logoutf(
         eventlogfile,
-        "timestamp;event_name"
+        "timestamp;event_name;distance"
     );
     // write lines
     for(int i=0; i<this_round->events.length(); ++i)
@@ -165,9 +165,10 @@ void write_log_to_file()
 
         study::logoutf(
             eventlogfile,
-            "%li;%s",
+            "%li;%s;%f",
             ev.timestamp,
-            ev.event_name
+            ev.event_name,
+            ev.distance
         );
     }
 
