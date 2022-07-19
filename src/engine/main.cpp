@@ -10,15 +10,6 @@
 #endif
 
 extern void cleargamma();
-int t_key = 0;
-int t_mouse = 0;
-int t_delta = 0;
-int array_size = 1000;
-int array[1000] = {};
-int array_i = 0;
-int last_t = 0;
-int t = 0;
-bool measuring = true;
 
 // Key to end the intermission
 VARP(endintermissionkey, 0, 69, 200);
@@ -960,13 +951,9 @@ void checkinput()
     if(interceptkeysym) clearinterceptkey();
     bool mousemoved = false;
     int focused = 0;
-    // conoutf("ev: %i \t dl: %i", events.length(), delayed_events.length());
     while(pumpevents(events))
-    // while(delayed_pumpevents(events, delayed_events))
     {
         SDL_Event &event = events.remove();
-        // SDL_Event &event = delayed_events.remove();
-
         if(focused && event.type!=SDL_WINDOWEVENT) { if(grabinput != (focused>0)) inputgrab(grabinput = focused>0, shouldgrab); focused = 0; }
 
         switch(event.type)
@@ -1056,35 +1043,27 @@ void checkinput()
                 break;
 
             case SDL_MOUSEBUTTONDOWN:
-                t_mouse = event.button.timestamp;
             case SDL_MOUSEBUTTONUP:
-                char* button_name;
                 
                 //if(lasttype==event.type && lastbut==event.button.button) break; // why?? get event twice without it
                 switch(event.button.button)
                 {
                     case SDL_BUTTON_LEFT:
                         processkey(-1, event.button.state==SDL_PRESSED);
-                        button_name = strdup("mouse_left");
                         break;
                     case SDL_BUTTON_MIDDLE:
                         processkey(-2, event.button.state==SDL_PRESSED);
-                        button_name = strdup("mouse_middle");
                         break;
                     case SDL_BUTTON_RIGHT:
                         processkey(-3, event.button.state==SDL_PRESSED);
-                        button_name = strdup("mouse_right");
                         break;
                     case SDL_BUTTON_X1:
                         processkey(-6, event.button.state==SDL_PRESSED);
-                        button_name = strdup("mouse_x1");
                         break;
                     case SDL_BUTTON_X2:
                         processkey(-7, event.button.state==SDL_PRESSED);
-                        button_name = strdup("mouse_x2");
                         break;
                     default:
-                        button_name = strdup("mouse_error");
                         break;
                 }
 

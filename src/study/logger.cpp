@@ -190,25 +190,19 @@ void setfiles(string participant)
     closelogfiles();
 
     formatstring(sumfilename, "logs/p%s_r%i_sum.txt", participant, roundnumber);
-    if(sumfilename)
+    strcpy(sumfilename, findfile(sumfilename, "wx"));
+    if(sumfilename) summarylogfile = fopen(sumfilename, "wx");
+    if(!summarylogfile)
     {
-        strcpy(sumfilename, findfile(sumfilename, "wx"));
-        if(sumfilename) summarylogfile = fopen(sumfilename, "wx");
-        if(!summarylogfile)
-        {
-            conoutf(CON_ERROR, "\f3ERROR: summary file for this participant and round already exists!");
-        }
+        conoutf(CON_ERROR, "\f3ERROR: summary file for this participant and round already exists!");
     }
 
     formatstring(evfilename, "logs/p%s_r%i_log.csv", participant, roundnumber);
-    if(evfilename)
+    strcpy(evfilename, findfile(evfilename, "wx"));
+    if(evfilename) eventlogfile = fopen(evfilename, "wx");
+    if(!eventlogfile)
     {
-        strcpy(evfilename, findfile(evfilename, "wx"));
-        if(evfilename) eventlogfile = fopen(evfilename, "wx");
-        if(!eventlogfile)
-        {
-            conoutf(CON_ERROR, "\f3ERROR: event file for this participant and round already exists!");
-        }
+        conoutf(CON_ERROR, "\f3ERROR: event file for this participant and round already exists!");
     }
 }
 
